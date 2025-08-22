@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+<title>정부 복지지원 서비스 검색기</title>
+<meta name="color-scheme" content="light dark" />
+<style>
+:root{
+  --bg:#0b0c0e; --surface:#111317; --surface-2:#16181d; --border:#262a33;
+  --text:#f2f4f8; --muted:#8b92a1; --accent:#2dd4bf; --ok:#22c55e; --err:#ef4444;
+}
+@media (prefers-color-scheme: light){
+  :root{ --bg:#f7f8f9; --surface:#ffffff; --surface-2:#f9fafb; --border:#e5e7eb; --text:#0b1220; --muted:#647085; --accent:#2dd4bf; }
+}
+html,body{height:100%} *{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.6 ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,"Apple SD Gothic Neo",Pretendard,Noto Sans KR,sans-serif}
+.container{max-width:980px;margin:0 auto;padding:16px}
+.header{position:sticky;top:0;z-index:10;backdrop-filter:saturate(120%) blur(6px);background:color-mix(in oklab,var(--bg) 82%, transparent);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 16px;border-radius:0 0 16px 16px}
+.logo{font-weight:800;letter-spacing:0.2px}
+.theme-toggle{display:inline-flex;gap:8px;align-items:center;border:1px solid var(--border);background:var(--surface-2);color:var(--text);padding:8px 12px;border-radius:999px;font-size:13px;cursor:pointer}
+.select,.btn{padding:12px 14px;border:1px solid var(--border);border-radius:12px;background:#2b3036;color:#f8fafc;cursor:pointer;font-size:14px}
+.btn.primary{background:#3a3f47;border-color:#3a3f47;color:#fff}.btn.primary:hover{background:#2c3138}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:14px}
+@media (max-width:1024px){ .grid{grid-template-columns:repeat(2,1fr);} } @media (max-width:640px){ .grid{grid-template-columns:1fr;} .select{min-width:46%} }
+.card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:14px;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+.card h3{margin:0 0 6px;font-size:17px;line-height:1.3}
+.meta{font-size:12px;color:var(--muted);margin-bottom:8px}
+.kv{font-size:13px;background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:10px;margin-top:8px}
+.kv b{display:inline-block;width:92px;color:#cdd3dd}
+.badge{display:inline-block;font-size:12px;padding:2px 8px;border-radius:999px;border:1px solid var(--border)}
+.badge.y{background:color-mix(in oklab,var(--ok) 20%, var(--surface));color:#16a34a}
+.badge.n{background:color-mix(in oklab,var(--err) 14%, var(--surface));color:#ef4444}
+.loader{display:none;margin-top:12px;color:var(--muted)} .loader.show{display:block}
+.footer{margin:16px 0 4px;color:var(--muted);font-size:12px;text-align:center}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div class="logo">정부 복지지원 서비스 검색기</div>
+    <button id="themeBtn" class="theme-toggle" aria-label="테마 전환">🌗 테마</button>
+  </div>
+
+  <div class="filters">
+    <select id="lifeArray" class="select" title="연령대">
+      <option value="">연령대 전체</option>
+      <option value="001">영유아</option>
+      <option value="002">아동</option>
+      <option value="003">청소년</option>
+      <option value="004">청년</option>
+      <option value="005">중장년</option>
+      <option value="006">노년</option>
+      <option value="007">임신·출산</option>
+    </select>
+
+    <select id="trgterIndvdlArray" class="select" title="지원대상">
+      <option value="">지원대상 전체</option>
+      <option value="010">다문화·탈북민</option>
+      <option value="020">다자녀</option>
+      <option value="030">보훈대상자</option>
+      <option value="040">장애인</option>
+      <option value="050">저소득</option>
+      <option value="060">한부모·조손</option>
+    </select>
+
+    <select id="intrsThemaArray" class="select" title="관심주제">
+      <option value="">관심주제 전체</option>
+      <option value="010">신체건강</option>
+      <option value="020">정신건강</option>
+      <option value="030">생활지원</option>
+      <option value="040">주거</option>
+      <option value="050">일자리</option>
+      <option value="060">문화·여가</option>
+      <option value="070">안전·위기</option>
+      <option value="080">임신·출산</option>
+      <option value="090">보육</option>
+      <option value="100">교육</option>
+      <option value="110">입양·위탁</option>
+      <option value="120">보호·돌봄</option>
+      <option value="130">서민금융</option>
+      <option value="140">법률</option>
+      <option value="160">에너지</option>
+    </select>
+
+    <button id="runBtn" class="btn primary" title="선택 기준으로 일괄 검색">🔍 선택으로 검색</button>
+    <button id="exportBtn" class="btn" title="현재 결과를 XLSX로 저장">⬇️ 엑셀(.xlsx)로 추출</button>
+  </div>
+
+  <details style="margin:0 0 8px;border:1px dashed #d9ddcc;border-radius:12px;background:#fcfdf9">
+    <summary style="cursor:pointer;padding:8px 12px;font-weight:600;color:#3b4a2a">고급검색 (키워드 보조)</summary>
+    <div class="controls" style="display:flex;gap:8px;margin-top:8px">
+      <input id="q" type="search" style="flex:1;padding:12px 14px;border:1px solid #d9ddcc;border-radius:12px;background:#fff" placeholder="필요 시 키워드를 보조로 입력하세요." />
+      <button id="searchBtn" class="btn">키워드 검색</button>
+    </div>
+  </details>
+
+  <div id="loader" class="loader">불러오는 중...</div>
+  <div id="notice" style="display:none;margin-top:10px;padding:10px;border-radius:10px;border:1px solid #f59e0b;background:#fff7ed;color:#92400e;font-size:13px"></div>
+  <div id="results" class="grid"></div>
+  <div class="footer">정보 제공: 보건복지부 · 한국사회보장정보원 (공공데이터포털)</div>
+</div>
+
+<script>
+// Theme toggle
+(document.getElementById('themeBtn')||{}).onclick=()=>{
+  const cur=document.documentElement.dataset.theme; const next=cur==='dark'?'light':'dark';
+  document.documentElement.dataset.theme=next; try{localStorage.setItem('theme',next);}catch(_){} }
+
+// ===== Config =====
+const BASE_URL_HTTPS = "https://apis.data.go.kr/B554287/NationalWelfareInformationsV001/NationalWelfarelistV001";
+const BASE_URL_HTTP  = "http://apis.data.go.kr/B554287/NationalWelfareInformationsV001/NationalWelfarelistV001";
+const PROXY_URL  = "https://muddy-limit-80e4.dynamicjmh.workers.dev/?url="; // Cloudflare Worker (?url= 인코딩 방식)
+const PROXY_BASE = "https://muddy-limit-80e4.dynamicjmh.workers.dev/";   // Cloudflare Worker (직접 파라미터 전달 방식)
+
+// ===== Utils =====
+const $ = (s)=>document.querySelector(s);
+function fmtDate8(yyyymmdd){ if(!yyyymmdd||yyyymmdd.length<8) return yyyymmdd||''; return `${yyyymmdd.slice(0,4)}-${yyyymmdd.slice(4,6)}-${yyyymmdd.slice(6,8)}`; }
+function showNotice(msg){ const n=$('#notice'); if(!n) return; n.style.display='block'; n.innerHTML=msg; }
+function clearNotice(){ const n=$('#notice'); if(!n) return; n.style.display='none'; n.innerHTML=''; }
+
+function buildUrl(baseUrl){
+  const u=new URL(baseUrl);
+  u.searchParams.set("callTp","L");
+  u.searchParams.set("pageNo","1");
+  u.searchParams.set("numOfRows","50");
+  u.searchParams.set("srchKeyCode","003"); // 제목+내용
+  const q=$('#q')?.value.trim(); if(q) u.searchParams.set('searchWrd', q);
+  const life=$('#lifeArray').value; const trg=$('#trgterIndvdlArray').value; const intr=$('#intrsThemaArray').value;
+  if(life) u.searchParams.set('lifeArray', life);
+  if(trg)  u.searchParams.set('trgterIndvdlArray', trg);
+  if(intr) u.searchParams.set('intrsThemaArray', intr);
+  u.searchParams.set('orderBy','popular');
+  return u.toString();
+}
+
+// Worker에 직접 파라미터로 전달할 URL(키는 서버에서 주입)
+function buildWorkerParamUrl(){
+  const u=new URL(PROXY_BASE);
+  u.searchParams.set("callTp","L");
+  u.searchParams.set("pageNo","1");
+  u.searchParams.set("numOfRows","50");
+  u.searchParams.set("srchKeyCode","003");
+  const q=$('#q')?.value.trim(); if(q) u.searchParams.set('searchWrd', q);
+  const life=$('#lifeArray').value; const trg=$('#trgterIndvdlArray').value; const intr=$('#intrsThemaArray').value;
+  if(life) u.searchParams.set('lifeArray', life);
+  if(trg)  u.searchParams.set('trgterIndvdlArray', trg);
+  if(intr) u.searchParams.set('intrsThemaArray', intr);
+  u.searchParams.set('orderBy','popular');
+  return u.toString();
+}
+
+async function fetchList(){
+  // 시도 순서: 1) 파라미터 모드 → 2) ?url= 인코딩 모드 → 3) HTTP/HTTPS 전환
+  let lastErr=null, lastStatus=0, lastCT='';
+
+  // 1) 파라미터 모드 (권장)
+  try{
+    const workerUrl = buildWorkerParamUrl();
+    console.log('[FETCH:param]', workerUrl);
+    const ctrl=new AbortController(); const t=setTimeout(()=>ctrl.abort(), 15000);
+    const res = await fetch(workerUrl, { headers:{'Accept':'application/xml,text/xml;q=0.9,application/json;q=0.8,*/*;q=0.7'}, signal: ctrl.signal, mode:'cors', cache:'no-store' });
+    clearTimeout(t);
+    lastStatus = res.status; lastCT = res.headers.get('content-type')||'';
+    const text = await res.text();
+    if(res.ok && text.trim()){
+      const parsed = await parseUpstream(text);
+      if(parsed.error) return { items: [], error: parsed.error };
+      if(parsed.items?.length) return { items: parsed.items };
+    } else {
+      lastErr = new Error(`HTTP ${res.status}`);
+    }
+  }catch(e){ lastErr=e; }
+
+  // 2) ?url= 인코딩 모드 (기존 방식)
+  const attempts=[BASE_URL_HTTPS, BASE_URL_HTTP];
+  for(const base of attempts){
+    const url = buildUrl(base);
+    const target = PROXY_URL + encodeURIComponent(url);
+    console.log('[FETCH:url]', url);
+    try{
+      const ctrl=new AbortController(); const t=setTimeout(()=>ctrl.abort(), 15000);
+      const res = await fetch(target, { headers:{'Accept':'application/xml,text/xml;q=0.9,application/json;q=0.8,*/*;q=0.7'}, signal: ctrl.signal, mode:'cors', cache:'no-store' });
+      clearTimeout(t);
+      lastStatus = res.status; lastCT = res.headers.get('content-type')||'';
+      const text = await res.text();
+      if(!res.ok){ lastErr = new Error(`HTTP ${res.status}`); continue; }
+      const parsed = await parseUpstream(text);
+      if(parsed.error) return { items: [], error: parsed.error };
+      return { items: parsed.items || [] };
+    }catch(e){ lastErr=e; continue; }
+  }
+
+  const hint = `마지막 상태=${lastStatus}, CT=${lastCT}${lastErr?`, 에러=${lastErr.message}`:''}`;
+  return { items: [], error: `요청 실패. ${hint}` };
+}
+
+async function parseUpstream(text){
+  if(text.trim().startsWith('<')){
+    const doc=new DOMParser().parseFromString(text,'text/xml');
+    const errHeader = doc.querySelector('cmmMsgHeader, cmnMsgHeader');
+    if(errHeader){
+      const code = errHeader.querySelector('returnReasonCode')?.textContent?.trim();
+      const auth = errHeader.querySelector('returnAuthMsg')?.textContent||'';
+      const msg  = errHeader.querySelector('errMsg')?.textContent||'';
+      if(code==='30' || /SERVICE_KEY_IS_NOT_REGISTERED_ERROR/.test(auth)){
+        return { items: [], error: `API 인증 문제(code=${code}). 워커의 API_KEY를 확인하세요.` };
+      }
+      if(code||auth||msg) return { items: [], error: `API 오류: ${msg || auth || code}` };
+    }
+    const nodes=[...doc.getElementsByTagName('servList'), ...doc.getElementsByTagName('item')];
+    const pick=(n,arr)=>{ for(const nm of arr){ const el=n.getElementsByTagName(nm)[0]; if(el&&el.textContent&&el.textContent.trim()!=='') return el.textContent.trim(); } return ''; };
+    const items = nodes.map(n=>({
+      servNm: pick(n,['servNm','svcNm','serviceNm']),
+      jurMnofNm: pick(n,['jurMnofNm','mngtMofNm','deptNm']),
+      servDgst: pick(n,['servDgst','summary','servDtlCn']),
+      servDtlLink: pick(n,['servDtlLink','servDtlLinkAddr','detailLink']),
+      lifeArray: pick(n,['lifeArray']),
+      trgterIndvdlArray: pick(n,['trgterIndvdlArray']),
+      intrsThemaArray: pick(n,['intrsThemaArray']),
+      onapPsbltYn: pick(n,['onapPsbltYn','onlineApplyYn']),
+      sprtCycNm: pick(n,['sprtCycNm','supportCycle']),
+      svcfrstRegTs: pick(n,['svcfrstRegTs','regDate']),
+      aplyMtdNm: pick(n,['aplyMtdNm']),
+      aplyPrdCn: pick(n,['aplyPrdCn'])
+    })).filter(it=>it.servNm);
+    return { items };
+  }
+  try{ const json=JSON.parse(text); return { items: (json?.response?.body?.items?.item)||[] }; }catch{}
+  return { items: [] };
+}
+
+function render(items) {
+  const box=$('#results'); box.innerHTML='';
+  if(!items||items.length===0){ box.innerHTML='<div class="card">검색 결과 없음</div>'; return; }
+  const iconFor=(it)=>{ const t=(it.lifeArray||"")+(it.intrsThemaArray||"");
+    if(/영유아|보육/.test(t)) return '🧸'; if(/아동|교육/.test(t)) return '📚'; if(/청소년|청년|일자리/.test(t)) return '💼'; if(/중장년|노년|돌봄/.test(t)) return '👵'; if(/주거/.test(t)) return '🏠'; if(/건강|신체건강|정신건강/.test(t)) return '🩺'; if(/서민금융|금융/.test(t)) return '💳'; if(/법률/.test(t)) return '⚖️'; if(/에너지/.test(t)) return '🔌'; return '🏛️'; };
+  window.currentItems = items;
+  items.forEach(it=>{
+    const yn=(it.onapPsbltYn||'').toUpperCase()==='Y' ? '<span class="badge y">온라인 신청 가능</span>' : ((it.onapPsbltYn||'').toUpperCase()==='N' ? '<span class="badge n">온라인 신청 불가</span>' : '-');
+    const link=it.servDtlLink||'#';
+    const card=document.createElement('div'); card.className='card';
+    card.innerHTML=`
+      <h3>${iconFor(it)} ${it.servNm}</h3>
+      <div class="meta">${it.jurMnofNm||''}</div>
+      <p>${it.servDgst||''}</p>
+      <div class="kv">
+        <div><b>연령대</b> ${it.lifeArray||'-'}</div>
+        <div><b>지원대상</b> ${it.trgterIndvdlArray||'-'}</div>
+        <div><b>관심주제</b> ${it.intrsThemaArray||'-'}</div>
+        <div><b>신청여부</b> ${yn}</div>
+        <div><b>신청기간</b> ${it.aplyPrdCn||'-'}</div>
+        <div><b>지원주기</b> ${it.sprtCycNm||'-'}</div>
+        <div><b>등록일</b> ${fmtDate8(it.svcfrstRegTs)||'-'}</div>
+      </div>
+      <div class="actions" style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+        <a class="btn primary" href="${link}" target="_blank" rel="noopener">자세히 보기</a>
+        <button class="btn" onclick="navigator.clipboard?.writeText('${link.replace(/'/g,"&#39;")}').then(()=>alert('링크가 복사되었습니다.'))">링크 복사</button>
+      </div>`;
+    box.appendChild(card);
+  });
+}
+
+async function doSearch(){
+  clearNotice();
+  document.querySelector('#loader').classList.add('show');
+  const {items, error} = await fetchList();
+  document.querySelector('#loader').classList.remove('show');
+  if(error) showNotice(error);
+  render(items);
+}
+
+// Events
+$('#runBtn').addEventListener('click', doSearch);
+$('#searchBtn').addEventListener('click', doSearch);
+$('#q')?.addEventListener('keydown', e=>{ if(e.key==='Enter') doSearch(); });
+
+// ===== XLSX 내보내기 (라이브러리 없이 ZIP 생성) =====
+function crc32(str){ const table=(function(){let c,t=[];for(let n=0;n<256;n++){c=n;for(let k=0;k<8;k++){c=((c&1)?(0xEDB88320^(c>>>1)):(c>>>1));}t[n]=c>>>0;}return t;})(); let crc=-1; for(let i=0;i<str.length;i++){const code=str.charCodeAt(i); crc=(crc>>>8)^table[(crc^code)&0xFF];} return (crc^(-1))>>>0; }
+function strToUint8(str){ const a=new Uint8Array(str.length); for(let i=0;i<str.length;i++) a[i]=str.charCodeAt(i)&0xFF; return a; }
+function dateToDos(t){ const d=new Date(t||Date.now()); const y=d.getFullYear()>1980? d.getFullYear()-1980:0; const time=(d.getHours()<<11)|(d.getMinutes()<<5)|(Math.floor(d.getSeconds()/2)); const date=(y<<9)|((d.getMonth()+1)<<5)|d.getDate(); return {dosTime:time,dosDate:date}; }
+function makeZip(files){ const enc=strToUint8; const parts=[]; const central=[]; let offset=0; const now=dateToDos(); files.forEach(f=>{ const data=enc(f.content); const crc=crc32(f.content); const name=enc(f.name); const lf=new Uint8Array(30+name.length); const v=new DataView(lf.buffer); v.setUint32(0,0x04034b50,true); v.setUint16(4,20,true); v.setUint16(6,0,true); v.setUint16(8,0,true); v.setUint16(10,now.dosTime,true); v.setUint16(12,now.dosDate,true); v.setUint32(14,crc,true); v.setUint32(18,data.length,true); v.setUint32(22,data.length,true); v.setUint16(26,name.length,true); v.setUint16(28,0,true); lf.set(name,30); parts.push(lf); offset+=lf.length; parts.push(data); offset+=data.length; const cd=new Uint8Array(46+name.length); const cv=new DataView(cd.buffer); cv.setUint32(0,0x02014b50,true); cv.setUint16(4,20,true); cv.setUint16(6,20,true); cv.setUint16(8,0,true); cv.setUint16(10,0,true); cv.setUint16(12,now.dosTime,true); cv.setUint16(14,now.dosDate,true); cv.setUint32(16,crc,true); cv.setUint32(20,data.length,true); cv.setUint32(24,data.length,true); cv.setUint16(28,name.length,true); cv.setUint16(30,0,true); cv.setUint16(32,0,true); cv.setUint16(34,0,true); cv.setUint16(36,0,true); cv.setUint32(38,0,true); cv.setUint32(42, f._offset = (offset-(lf.length+data.length)), true); cd.set(name,46); central.push(cd); }); const centralSize=central.reduce((s,a)=>s+a.length,0); const centralOffset=offset; central.forEach(c=>{ parts.push(c); offset+=c.length; }); const eocd=new Uint8Array(22); const ev=new DataView(eocd.buffer); ev.setUint32(0,0x06054b50,true); ev.setUint16(4,0,true); ev.setUint16(6,0,true); ev.setUint16(8,window.currentItems?.length||0,true); ev.setUint16(10,window.currentItems?.length||0,true); ev.setUint32(12,centralSize,true); ev.setUint32(16,centralOffset,true); ev.setUint16(20,0,true); parts.push(eocd); let total=0; parts.forEach(p=> total+=p.length); const out=new Uint8Array(total); let pos=0; parts.forEach(p=>{ out.set(p,pos); pos+=p.length; }); return new Blob([out], { type:'application/zip' }); }
+function buildXlsx(items){
+  const esc=s=>String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const rows=[["서비스명","소관부처","요약","연령대","지원대상","관심주제","신청가능","신청기간","지원주기","등록일","상세링크"]]
+    .concat(items.map(it=>[it.servNm||'',it.jurMnofNm||'',it.servDgst||'',it.lifeArray||'',it.trgterIndvdlArray||'',it.intrsThemaArray||'',(it.onapPsbltYn||''),it.aplyPrdCn||'',it.sprtCycNm||'',fmtDate8(it.svcfrstRegTs)||'',it.servDtlLink||'']));
+  let sheet=`<?xml version="1.0" encoding="UTF-8"?>
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>`;
+  rows.forEach((r,ri)=>{ sheet+=`<row r="${ri+1}">`; r.forEach((c,ci)=>{ const col=String.fromCharCode(65+(ci%26))+(ri+1); sheet+=`<c r="${col}" t="inlineStr"><is><t>${esc(c)}</t></is></c>`; }); sheet+=`</row>`; });
+  sheet+=`</sheetData></worksheet>`;
+  const contentTypes=`<?xml version="1.0" encoding="UTF-8"?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+  <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
+  <Default Extension="xml" ContentType="application/xml"/>
+  <Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>
+  <Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>
+  <Override PartName="/docProps/core.xml" ContentType="application/vnd.openxmlformats-package.core-properties+xml"/>
+  <Override PartName="/docProps/app.xml" ContentType="application/vnd.openxmlformats-officedocument.extended-properties+xml"/>
+</Types>`;
+  const rels=`<?xml version="1.0" encoding="UTF-8"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="/xl/workbook.xml"/>
+</Relationships>`;
+  const wb=`<?xml version="1.0" encoding="UTF-8"?>
+<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
+  <sheets>
+    <sheet name="welfare" sheetId="1" r:id="rId1"/>
+  </sheets>
+</workbook>`;
+  const wbRels=`<?xml version="1.0" encoding="UTF-8"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/>
+</Relationships>`;
+  const core=`<?xml version="1.0" encoding="UTF-8"?>
+<cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:dcmitype="http://purl.org/dc/dcmitype/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <dc:title>welfare_services</dc:title>
+  <dc:creator>정부 복지지원 서비스 검색기</dc:creator>
+  <cp:lastModifiedBy>정부 복지지원 서비스 검색기</cp:lastModifiedBy>
+  <dcterms:created xsi:type="dcterms:W3CDTF">${new Date().toISOString()}</dcterms:created>
+</cp:coreProperties>`;
+  const app=`<?xml version="1.0" encoding="UTF-8"?>
+<Properties xmlns="http://schemas.openxmlformats.org/officeDocument/2006/extended-properties" xmlns:vt="http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes">
+  <Application>WebApp</Application>
+</Properties>`;
+  const files=[
+    {name:"[Content_Types].xml",content:contentTypes},
+    {name:"_rels/.rels",content:rels},
+    {name:"xl/workbook.xml",content:wb},
+    {name:"xl/_rels/workbook.xml.rels",content:wbRels},
+    {name:"xl/worksheets/sheet1.xml",content:sheet},
+    {name:"docProps/core.xml",content:core},
+    {name:"docProps/app.xml",content:app}
+  ];
+  return makeZip(files);
+}
+function exportToXlsx(){
+  if(!window.currentItems||window.currentItems.length===0){ alert('내보낼 데이터가 없습니다.'); return; }
+  const blob=buildXlsx(window.currentItems);
+  const url=URL.createObjectURL(blob); const a=document.createElement('a');
+  a.href=url; a.download='복지서비스목록.xlsx'; a.click(); URL.revokeObjectURL(url);
+}
+$('#exportBtn').addEventListener('click', exportToXlsx);
+
+// === Search button wiring (missing before) ===
+const runBtn = document.getElementById('runBtn');
+const searchBtn = document.getElementById('searchBtn');
+const qInput = document.getElementById('q');
+if (runBtn) runBtn.addEventListener('click', doSearch);
+if (searchBtn) searchBtn.addEventListener('click', doSearch);
+if (qInput) qInput.addEventListener('keydown', (e)=>{ if(e.key==='Enter'){ e.preventDefault(); doSearch(); }});
+
+// Auto-run a lightweight fetch on load (no keyword) so user sees something
+window.addEventListener('DOMContentLoaded', ()=>{
+  // optional: only when nothing selected
+  doSearch();
+});
+</script>
+</body>
+</html>
