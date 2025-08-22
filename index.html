@@ -4,91 +4,84 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>정부 복지지원 서비스 검색기</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
+      font-family: 'Noto Sans KR', sans-serif;
       background-color: #1e1e1e;
-      color: #f0f0f0;
+      color: #f5f5f5;
       margin: 0;
       padding: 0;
     }
     header {
-      background: #2b2b2b;
-      padding: 1rem;
       text-align: center;
-      font-size: 1.2rem;
+      padding: 1.5rem;
+      background: linear-gradient(90deg, #2e2e2e, #3a3a3a);
+      font-size: 1.3rem;
       font-weight: bold;
-      color: #fff;
+      letter-spacing: 1px;
     }
-    main {
+    .container {
       padding: 1rem;
       max-width: 900px;
       margin: auto;
     }
     .filters {
-      display: flex;
-      flex-direction: column;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
       gap: 0.8rem;
       margin-bottom: 1rem;
     }
     select, button {
-      padding: 0.6rem;
+      padding: 0.7rem;
       border-radius: 8px;
       border: none;
-      font-size: 1rem;
+      font-size: 0.95rem;
+    }
+    select {
+      background: #2b2b2b;
+      color: #f5f5f5;
     }
     button {
-      background: #555;
-      color: white;
+      background: #5a5a5a;
+      color: #fff;
       cursor: pointer;
+      transition: background 0.3s ease;
     }
     button:hover {
-      background: #777;
+      background: #808080;
     }
     .results {
       display: grid;
       gap: 1rem;
+      margin-top: 1rem;
     }
     .card {
-      background: #2e2e2e;
+      background: #2b2b2b;
+      border-radius: 12px;
       padding: 1rem;
-      border-radius: 10px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+      transition: transform 0.2s;
+    }
+    .card:hover {
+      transform: scale(1.02);
     }
     .card h3 {
-      margin: 0 0 0.5rem 0;
-      font-size: 1.1rem;
-      color: #ffd700;
+      margin: 0;
+      color: #9cd67d;
     }
-    .card p {
-      margin: 0.3rem 0;
-    }
-    .export-btn {
+    .export {
+      text-align: right;
       margin-top: 1rem;
-      padding: 0.6rem 1rem;
-      border-radius: 8px;
-      border: none;
-      font-size: 1rem;
-      background: #444;
-      color: #fff;
-      cursor: pointer;
-    }
-    .export-btn:hover {
-      background: #666;
-    }
-    @media (max-width: 600px) {
-      .filters {
-        font-size: 0.9rem;
-      }
     }
   </style>
 </head>
 <body>
   <header>정부 복지지원 서비스 검색기</header>
-  <main>
+  <div class="container">
     <div class="filters">
       <select id="age">
-        <option value="">연령대 선택</option>
+        <option value="">연령대 전체</option>
         <option value="001">영유아</option>
         <option value="002">아동</option>
         <option value="003">청소년</option>
@@ -97,70 +90,98 @@
         <option value="006">노인</option>
       </select>
       <select id="target">
-        <option value="">지원대상 선택</option>
-        <option value="003">저소득</option>
-        <option value="004">장애인</option>
-        <option value="005">한부모</option>
+        <option value="">지원대상 전체</option>
+        <option value="010">저소득</option>
+        <option value="020">장애인</option>
+        <option value="030">노인</option>
+        <option value="040">영유아</option>
+        <option value="050">청년</option>
+        <option value="060">기타</option>
       </select>
       <select id="theme">
-        <option value="">관심주제 선택</option>
-        <option value="001">주거</option>
-        <option value="002">고용</option>
-        <option value="003">교육</option>
-        <option value="004">건강</option>
+        <option value="">관심주제 전체</option>
+        <option value="010">주거·금융</option>
+        <option value="020">고용·창업</option>
+        <option value="030">교육</option>
+        <option value="040">문화·생활</option>
+        <option value="050">보건의료</option>
+        <option value="060">임신·출산</option>
+        <option value="070">양육·교육</option>
+        <option value="080">노후</option>
+        <option value="090">장애</option>
+        <option value="100">기타</option>
       </select>
-      <button id="searchBtn">🔍 선택으로 검색</button>
+    </div>
+    <button onclick="search()">🔍 선택으로 검색</button>
+    <div class="export">
+      <button onclick="exportExcel()">⬇️ Excel 내보내기</button>
     </div>
     <div class="results" id="results"></div>
-    <button class="export-btn" id="exportBtn">⬇️ 엑셀로 추출</button>
-  </main>
+  </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <script>
-    const PROXY_URL = "https://muddy-limit-80e4.dynamicjmh.workers.dev/?url=";
-    const API_ENDPOINT = "https://apis.data.go.kr/B554287/NationalWelfareInformationsV001/NationalWelfarelistV001";
+    const PROXY = "https://muddy-limit-80e4.dynamicjmh.workers.dev/?url=";
+    const ENDPOINT = "https://apis.data.go.kr/B554287/NationalWelfareInformationsV001/NationalWelfarelistV001";
 
-    document.getElementById("searchBtn").addEventListener("click", async () => {
+    let lastResults = [];
+
+    async function search() {
       const age = document.getElementById("age").value;
       const target = document.getElementById("target").value;
       const theme = document.getElementById("theme").value;
-      let url = API_ENDPOINT + `?callTp=L&pageNo=1&numOfRows=50&srchKeyCode=${target}&lifeArray=${age}&orderBy=popular`;
-      const response = await fetch(PROXY_URL + encodeURIComponent(url));
-      const text = await response.text();
+
+      const params = new URLSearchParams({
+        callTp: "L",
+        pageNo: "1",
+        numOfRows: "20",
+        srchKeyCode: "003",
+        lifeArray: age,
+        trgterIndvdlArray: target,
+        intrsThemaArray: theme,
+        orderBy: "popular"
+      });
+
+      const url = PROXY + encodeURIComponent(`${ENDPOINT}?${params.toString()}`);
+      const res = await fetch(url);
+      const text = await res.text();
       const parser = new DOMParser();
-      const xml = parser.parseFromString(text, "application/xml");
-      const items = xml.getElementsByTagName("servList");
+      const xml = parser.parseFromString(text, "text/xml");
+      const items = [...xml.getElementsByTagName("servList"), ...xml.getElementsByTagName("item")];
+
+      lastResults = [];
       const resultsDiv = document.getElementById("results");
       resultsDiv.innerHTML = "";
-      window._exportData = [];
-      for (let item of items) {
-        let name = item.getElementsByTagName("servNm")[0]?.textContent || "제목없음";
-        let detail = item.getElementsByTagName("jurMnofNm")[0]?.textContent || "기관정보 없음";
-        let appWay = item.getElementsByTagName("aplyMtdNm")[0]?.textContent || "신청방법 정보 없음";
-        let link = item.getElementsByTagName("servDtlLink")[0]?.textContent || "#";
-        let period = item.getElementsByTagName("aplyPrdCn")[0]?.textContent || "상시";
-        let el = document.createElement("div");
-        el.className = "card";
-        el.innerHTML = `<h3>${name}</h3>
-                        <p>기관: ${detail}</p>
-                        <p>신청방법: ${appWay}</p>
-                        <p>신청기간: ${period}</p>
-                        <a href="${link}" target="_blank">자세히 보기</a>`;
-        resultsDiv.appendChild(el);
-        window._exportData.push({ 서비스명: name, 기관: detail, 신청방법: appWay, 신청기간: period, 링크: link });
-      }
-    });
 
-    document.getElementById("exportBtn").addEventListener("click", () => {
-      if (!window._exportData || window._exportData.length === 0) {
-        alert("내보낼 데이터가 없습니다.");
+      items.forEach(item => {
+        const name = item.getElementsByTagName("servNm")[0]?.textContent || "제목 없음";
+        const summary = item.getElementsByTagName("servDgst")[0]?.textContent || "";
+        const period = item.getElementsByTagName("aplyPerd")[0]?.textContent || "기간 정보 없음";
+        const apply = item.getElementsByTagName("aplyMtd")[0]?.textContent || "신청 방법 없음";
+
+        lastResults.push({ name, summary, period, apply });
+
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `
+          <h3>${name}</h3>
+          <p>${summary}</p>
+          <p><b>신청기간:</b> ${period}</p>
+          <p><b>신청방법:</b> ${apply}</p>
+        `;
+        resultsDiv.appendChild(card);
+      });
+    }
+
+    function exportExcel() {
+      if (lastResults.length === 0) {
+        alert("먼저 검색을 실행하세요.");
         return;
       }
-      const ws = XLSX.utils.json_to_sheet(window._exportData);
+      const ws = XLSX.utils.json_to_sheet(lastResults);
       const wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, "복지서비스");
-      XLSX.writeFile(wb, "복지서비스목록.xlsx");
-    });
+      XLSX.writeFile(wb, "복지서비스_목록.xlsx");
+    }
   </script>
 </body>
 </html>
