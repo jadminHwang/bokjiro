@@ -1,217 +1,743 @@
-<!doctype html>
-<html lang="ko">
+<!DOCTYPE html>
+<html lang="ko" data-theme="light">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
-<title>정부 복지지원 서비스 검색기</title>
-<meta name="color-scheme" content="light dark" />
-<style>
-:root{
-  --bg:#0b0c0e; --surface:#111317; --surface-2:#16181d; --border:#262a33;
-  --text:#f2f4f8; --muted:#8b92a1; --accent:#2dd4bf; --ok:#22c55e; --err:#ef4444;
-}
-@media (prefers-color-scheme: light){
-  :root{ --bg:#f7f8f9; --surface:#ffffff; --surface-2:#f9fafb; --border:#e5e7eb; --text:#0b1220; --muted:#647085; --accent:#2dd4bf; }
-}
-html,body{height:100%} *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font:15px/1.6 ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,"Apple SD Gothic Neo",Pretendard,Noto Sans KR,sans-serif}
-.container{max-width:980px;margin:0 auto;padding:16px}
-.header{position:sticky;top:0;z-index:10;backdrop-filter:saturate(120%) blur(6px);background:color-mix(in oklab,var(--bg) 82%, transparent);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 16px;border-radius:0 0 16px 16px}
-.logo{font-weight:800;letter-spacing:0.2px}
-.theme-toggle{display:inline-flex;gap:8px;align-items:center;border:1px solid var(--border);background:var(--surface-2);color:var(--text);padding:8px 12px;border-radius:999px;font-size:13px;cursor:pointer}
-.select,.btn{padding:12px 14px;border:1px solid var(--border);border-radius:12px;background:#2b3036;color:#f8fafc;cursor:pointer;font-size:14px}
-.btn.primary{background:#3a3f47;border-color:#3a3f47;color:#fff}.btn.primary:hover{background:#2c3138}
-.filters{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
-.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:14px}
-@media (max-width:1024px){ .grid{grid-template-columns:repeat(2,1fr);} } @media (max-width:640px){ .grid{grid-template-columns:1fr;} .select{min-width:46%} }
-.card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:14px;box-shadow:0 10px 30px rgba(0,0,0,.25)}
-.card h3{margin:0 0 6px;font-size:17px;line-height:1.3}
-.meta{font-size:12px;color:var(--muted);margin-bottom:8px}
-.kv{font-size:13px;background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:10px;margin-top:8px}
-.kv b{display:inline-block;width:92px;color:#cdd3dd}
-.badge{display:inline-block;font-size:12px;padding:2px 8px;border-radius:999px;border:1px solid var(--border)}
-.badge.y{background:color-mix(in oklab,var(--ok) 20%, var(--surface));color:#16a34a}
-.badge.n{background:color-mix(in oklab,var(--err) 14%, var(--surface));color:#ef4444}
-.loader{display:none;margin-top:12px;color:var(--muted)} .loader.show{display:block}
-.footer{margin:16px 0 4px;color:var(--muted);font-size:12px;text-align:center}
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+  <title>정부 복지지원 서비스 🔎</title>
+  <meta name="description" content="나를 위한 맞춤형 정부 복지 서비스를 한 곳에서 쉽게 검색하세요." />
+  
+  <!-- Pretendard Font -->
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" />
+  
+  <style>
+    :root {
+      --font-family: 'Pretendard Variable', Pretendard, system-ui, -apple-system, sans-serif;
+      --primary: #3b82f6;      /* Blue 500 */
+      --primary-hover: #2563eb; /* Blue 600 */
+      --secondary: #10b981;    /* Emerald 500 */
+      --surface: #ffffff;
+      --bg: #f8fafc;           /* Slate 50 */
+      --text-main: #0f172a;    /* Slate 900 */
+      --text-muted: #64748b;   /* Slate 500 */
+      --border: #e2e8f0;       /* Slate 200 */
+      --border-focus: #cbd5e1; /* Slate 300 */
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+      --card-radius: 16px;
+      --hero-bg: linear-gradient(135deg, #e0f2fe 0%, #dbeafe 100%);
+      --hero-text: #0ea5e9;
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      
+      --badge-y-bg: #dcfce7;
+      --badge-y-text: #166534;
+      --badge-n-bg: #fee2e2;
+      --badge-n-text: #991b1b;
+    }
+
+    [data-theme="dark"] {
+      --primary: #60a5fa;      /* Blue 400 */
+      --primary-hover: #3b82f6; /* Blue 500 */
+      --surface: #1e293b;      /* Slate 800 */
+      --bg: #0f172a;           /* Slate 900 */
+      --text-main: #f8fafc;    /* Slate 50 */
+      --text-muted: #94a3b8;   /* Slate 400 */
+      --border: #334155;       /* Slate 700 */
+      --border-focus: #475569; /* Slate 600 */
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.4);
+      --hero-bg: linear-gradient(135deg, #0c4a6e 0%, #172554 100%);
+      --hero-text: #7dd3fc;
+      
+      --badge-y-bg: #14532d;
+      --badge-y-text: #86efac;
+      --badge-n-bg: #7f1d1d;
+      --badge-n-text: #fca5a5;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      background-color: var(--bg);
+      color: var(--text-main);
+      font-family: var(--font-family);
+      line-height: 1.6;
+      transition: background-color 0.3s, color 0.3s;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Header Nav */
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      background-color: rgba(var(--bg), 0.8);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .logo {
+      font-weight: 800;
+      font-size: 1.25rem;
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .logo span { color: var(--primary); }
+    
+    .theme-toggle {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      padding: 8px 16px;
+      border-radius: 9999px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.875rem;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .theme-toggle:hover {
+      background: var(--border);
+    }
+
+    /* Hero Section */
+    .hero {
+      background: var(--hero-bg);
+      padding: 4rem 1.5rem;
+      text-align: center;
+      border-radius: 0 0 2.5rem 2.5rem;
+      margin-bottom: -2rem;
+      padding-bottom: 6rem;
+    }
+    .hero h1 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+      letter-spacing: -0.02em;
+    }
+    .hero p {
+      font-size: 1.125rem;
+      color: var(--hero-text);
+      max-width: 600px;
+      margin: 0 auto;
+      font-weight: 500;
+      word-break: keep-all;
+    }
+
+    /* Main Container */
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 1.5rem 4rem 1.5rem;
+      position: relative;
+    }
+
+    /* Search & Filter Bar */
+    .search-panel {
+      background: var(--surface);
+      border-radius: var(--card-radius);
+      padding: 1.5rem;
+      box-shadow: var(--shadow-lg);
+      border: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+    }
+    
+    .search-top {
+      display: flex;
+      gap: 0.75rem;
+    }
+    .search-input-wrapper {
+      flex: 1;
+      position: relative;
+    }
+    .search-input-wrapper svg {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      width: 20px;
+      height: 20px;
+    }
+    .search-input {
+      width: 100%;
+      padding: 1rem 1rem 1rem 3rem;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--bg);
+      color: var(--text-main);
+      font-size: 1rem;
+      font-weight: 500;
+      transition: var(--transition);
+      font-family: var(--font-family);
+    }
+    .search-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+    }
+    
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 0.75rem 1.5rem;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: var(--transition);
+      border: 1px solid transparent;
+      font-family: var(--font-family);
+      white-space: nowrap;
+    }
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+    }
+    .btn-primary:hover {
+      background: var(--primary-hover);
+      transform: translateY(-1px);
+    }
+    .btn-outline {
+      background: var(--surface);
+      border-color: var(--border);
+      color: var(--text-main);
+    }
+    .btn-outline:hover {
+      background: var(--bg);
+      border-color: var(--text-muted);
+    }
+
+    .filters-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+    
+    select.filter-select {
+      width: 100%;
+      padding: 0.875rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background-color: var(--bg);
+      color: var(--text-main);
+      font-size: 0.95rem;
+      font-weight: 500;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 1rem center;
+      background-size: 1em;
+      cursor: pointer;
+      font-family: var(--font-family);
+    }
+    select.filter-select:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+    
+    .panel-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 0.5rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+    }
+    
+    .result-info {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    /* Results Grid */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--card-radius);
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+      transition: var(--transition);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+    }
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--border-focus);
+    }
+    
+    .card-header {
+      margin-bottom: 1rem;
+    }
+    .card-icon {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+      display: block;
+    }
+    .card-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      line-height: 1.4;
+      margin-bottom: 0.25rem;
+      color: var(--text-main);
+      word-break: keep-all;
+    }
+    .card-meta {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+    .card-desc {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      margin-bottom: 1.25rem;
+      line-height: 1.5;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      flex: 1;
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 1.25rem;
+    }
+    .tag {
+      font-size: 0.75rem;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      background: var(--bg);
+      color: var(--text-muted);
+      font-weight: 600;
+      border: 1px solid var(--border);
+    }
+
+    .info-list {
+      background: var(--bg);
+      border-radius: 12px;
+      padding: 1rem;
+      font-size: 0.875rem;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 1.5rem;
+      border: 1px solid var(--border);
+    }
+    .info-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    .info-label {
+      color: var(--text-muted);
+      font-weight: 600;
+      min-width: 65px;
+    }
+    .info-val {
+      color: var(--text-main);
+      font-weight: 500;
+      text-align: right;
+      word-break: keep-all;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+    .badge.y { background: var(--badge-y-bg); color: var(--badge-y-text); }
+    .badge.n { background: var(--badge-n-bg); color: var(--badge-n-text); }
+
+    .card-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: auto;
+    }
+    .btn-card {
+      padding: 0.6rem;
+      font-size: 0.9rem;
+      border-radius: 10px;
+    }
+
+    /* Load More */
+    .load-more-container {
+      margin-top: 3rem;
+      text-align: center;
+      display: none;
+    }
+    .load-more-container.show {
+      display: block;
+    }
+
+    /* Loader / Messages */
+    .loader-overlay {
+      display: none;
+      text-align: center;
+      padding: 3rem 0;
+      color: var(--primary);
+    }
+    .loader-overlay.show {
+      display: block;
+    }
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid var(--border);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 1rem;
+    }
+    @keyframes spin { 100% { transform: rotate(360deg); } }
+
+    .empty-state {
+      text-align: center;
+      padding: 4rem 2rem;
+      background: var(--surface);
+      border-radius: var(--card-radius);
+      border: 1px dashed var(--border-focus);
+      color: var(--text-muted);
+      grid-column: 1 / -1;
+    }
+    .empty-icon { font-size: 3rem; margin-bottom: 1rem; opacity: 0.5; }
+
+    /* Toast Notification */
+    #toast {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: #1e293b;
+      color: #f8fafc;
+      padding: 12px 24px;
+      border-radius: 999px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3);
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      z-index: 100;
+      opacity: 0;
+    }
+    #toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+    [data-theme="dark"] #toast {
+      background: #e2e8f0;
+      color: #0f172a;
+    }
+
+    /* Error Note */
+    .notice {
+      display: none;
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+      border-radius: 12px;
+      background: #fff7ed;
+      border: 1px solid #fed7aa;
+      color: #9a3412;
+      font-weight: 500;
+    }
+    [data-theme="dark"] .notice {
+      background: #431407;
+      border-color: #7c2d12;
+      color: #fed7aa;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .search-top { flex-direction: column; }
+      .hero { padding: 3rem 1rem 5rem 1rem; }
+      .hero h1 { font-size: 2rem; }
+    }
+  </style>
 </head>
 <body>
-<div class="container">
-  <div class="header">
-    <div class="logo">정부 복지지원 서비스 검색기</div>
-    <button id="themeBtn" class="theme-toggle" aria-label="테마 전환">🌗 테마</button>
-  </div>
 
-  <div class="filters">
-    <select id="lifeArray" class="select" title="연령대">
-      <option value="">연령대 전체</option>
-      <option value="001">영유아</option>
-      <option value="002">아동</option>
-      <option value="003">청소년</option>
-      <option value="004">청년</option>
-      <option value="005">중장년</option>
-      <option value="006">노년</option>
-      <option value="007">임신·출산</option>
-    </select>
-
-    <select id="trgterIndvdlArray" class="select" title="지원대상">
-      <option value="">지원대상 전체</option>
-      <option value="010">다문화·탈북민</option>
-      <option value="020">다자녀</option>
-      <option value="030">보훈대상자</option>
-      <option value="040">장애인</option>
-      <option value="050">저소득</option>
-      <option value="060">한부모·조손</option>
-    </select>
-
-    <select id="intrsThemaArray" class="select" title="관심주제">
-      <option value="">관심주제 전체</option>
-      <option value="010">신체건강</option>
-      <option value="020">정신건강</option>
-      <option value="030">생활지원</option>
-      <option value="040">주거</option>
-      <option value="050">일자리</option>
-      <option value="060">문화·여가</option>
-      <option value="070">안전·위기</option>
-      <option value="080">임신·출산</option>
-      <option value="090">보육</option>
-      <option value="100">교육</option>
-      <option value="110">입양·위탁</option>
-      <option value="120">보호·돌봄</option>
-      <option value="130">서민금융</option>
-      <option value="140">법률</option>
-      <option value="160">에너지</option>
-    </select>
-
-    <button id="runBtn" class="btn primary" title="선택 기준으로 일괄 검색">🔍 선택으로 검색</button>
-    <button id="exportBtn" class="btn" title="현재 결과를 XLSX로 저장">⬇️ 엑셀(.xlsx)로 추출</button>
-  </div>
-
-  <details style="margin:0 0 8px;border:1px dashed #d9ddcc;border-radius:12px;background:#fcfdf9">
-    <summary style="cursor:pointer;padding:8px 12px;font-weight:600;color:#3b4a2a">고급검색 (키워드 보조)</summary>
-    <div class="controls" style="display:flex;gap:8px;margin-top:8px">
-      <input id="q" type="search" style="flex:1;padding:12px 14px;border:1px solid #d9ddcc;border-radius:12px;background:#fff" placeholder="필요 시 키워드를 보조로 입력하세요." />
-      <button id="searchBtn" class="btn">키워드 검색</button>
+  <!-- Header -->
+  <header class="header">
+    <div class="logo">
+      🏛️ 정부 <span>복지지원</span> 검색기
     </div>
-  </details>
+    <button id="themeBtn" class="theme-toggle" aria-label="테마 전환">
+      <span id="themeIcon">🌗</span> <span class="theme-text">테마 전환</span>
+    </button>
+  </header>
 
-  <div id="loader" class="loader">불러오는 중...</div>
-  <div id="notice" style="display:none;margin-top:10px;padding:10px;border-radius:10px;border:1px solid #f59e0b;background:#fff7ed;color:#92400e;font-size:13px"></div>
-  <div id="results" class="grid"></div>
-  <div class="footer">정보 제공: 보건복지부 · 한국사회보장정보원 (공공데이터포털)</div>
-</div>
+  <!-- Hero -->
+  <section class="hero">
+    <h1>나에게 맞는 맞춤형 복지, 찾기</h1>
+    <p>복잡한 정부 복지 혜택, 키워드와 조건으로 한 번에 찾아보고 신청하세요.</p>
+  </section>
+
+  <!-- Main Content -->
+  <main class="container">
+    
+    <!-- Search Panel -->
+    <div class="search-panel">
+      <div class="search-top">
+        <div class="search-input-wrapper">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+          <input id="q" type="search" class="search-input" placeholder="검색어 (예: 청년, 주거, 장학금 등)" aria-label="검색어 입력" />
+        </div>
+        <button id="searchBtn" class="btn btn-primary">검색하기</button>
+      </div>
+      
+      <div class="filters-grid">
+        <select id="lifeArray" class="filter-select" title="연령대">
+          <option value="">👤 연령대 전체</option>
+          <option value="001">영유아</option>
+          <option value="002">아동</option>
+          <option value="003">청소년</option>
+          <option value="004">청년</option>
+          <option value="005">중장년</option>
+          <option value="006">노년</option>
+          <option value="007">임신·출산</option>
+        </select>
+        
+        <select id="trgterIndvdlArray" class="filter-select" title="지원대상">
+          <option value="">🎯 지원대상 전체</option>
+          <option value="010">다문화·탈북민</option>
+          <option value="020">다자녀</option>
+          <option value="030">보훈대상자</option>
+          <option value="040">장애인</option>
+          <option value="050">저소득</option>
+          <option value="060">한부모·조손</option>
+        </select>
+
+        <select id="intrsThemaArray" class="filter-select" title="관심주제">
+          <option value="">📌 관심주제 전체</option>
+          <option value="010">신체건강</option>
+          <option value="020">정신건강</option>
+          <option value="030">생활지원</option>
+          <option value="040">주거</option>
+          <option value="050">일자리</option>
+          <option value="060">문화·여가</option>
+          <option value="070">안전·위기</option>
+          <option value="080">임신·출산</option>
+          <option value="090">보육</option>
+          <option value="100">교육</option>
+          <option value="110">입양·위탁</option>
+          <option value="120">보호·돌봄</option>
+          <option value="130">서민금융</option>
+          <option value="140">법률</option>
+          <option value="160">에너지</option>
+        </select>
+      </div>
+
+      <div class="panel-footer">
+        <div class="result-info" id="resultInfo">검색을 시작해보세요.</div>
+        <button id="exportBtn" class="btn btn-outline" style="padding:0.5rem 1rem;font-size:0.875rem;">
+          📊 엑셀 저장
+        </button>
+      </div>
+    </div>
+
+    <!-- Error Notice -->
+    <div id="notice" class="notice"></div>
+
+    <!-- Results Grid -->
+    <div id="results" class="grid"></div>
+
+    <!-- Loading State -->
+    <div id="loader" class="loader-overlay">
+      <div class="spinner"></div>
+      <div style="font-weight: 600;">데이터를 불러오는 중입니다...</div>
+    </div>
+
+    <!-- Load More -->
+    <div id="loadMoreSection" class="load-more-container">
+      <button id="loadMoreBtn" class="btn btn-outline" style="border-radius:999px; padding: 0.75rem 2rem;">
+        더보기 (다음 50개) ↓
+      </button>
+    </div>
+
+  </main>
+
+  <!-- Toast -->
+  <div id="toast">메시지</div>
 
 <script>
-// Theme toggle
-(document.getElementById('themeBtn')||{}).onclick=()=>{
-  const cur=document.documentElement.dataset.theme; const next=cur==='dark'?'light':'dark';
-  document.documentElement.dataset.theme=next; try{localStorage.setItem('theme',next);}catch(_){} }
+// ===== Theme Management =====
+const themeBtn = document.getElementById('themeBtn');
+const initTheme = () => {
+  const saved = localStorage.getItem('theme');
+  const dflt = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  document.documentElement.dataset.theme = saved || dflt;
+};
+initTheme();
+themeBtn.addEventListener('click', () => {
+  const cur = document.documentElement.dataset.theme;
+  const next = cur === 'dark' ? 'light' : 'dark';
+  document.documentElement.dataset.theme = next;
+  try { localStorage.setItem('theme', next); } catch(e){}
+});
+
+// ===== Logic State =====
+let currentItems = [];
+let currentPage = 1;
+let hasMore = true;
+let isFetching = false;
+let lastSearchParams = null;
 
 // ===== Config =====
 const BASE_URL_HTTPS = "https://apis.data.go.kr/B554287/NationalWelfareInformationsV001/NationalWelfarelistV001";
 const BASE_URL_HTTP  = "http://apis.data.go.kr/B554287/NationalWelfareInformationsV001/NationalWelfarelistV001";
-const PROXY_URL  = "https://muddy-limit-80e4.dynamicjmh.workers.dev/?url="; // Cloudflare Worker (?url= 인코딩 방식)
-const PROXY_BASE = "https://muddy-limit-80e4.dynamicjmh.workers.dev/";   // Cloudflare Worker (직접 파라미터 전달 방식)
+const PROXY_URL  = "https://muddy-limit-80e4.dynamicjmh.workers.dev/?url="; 
+const PROXY_BASE = "https://muddy-limit-80e4.dynamicjmh.workers.dev/";   
 
 // ===== Utils =====
-const $ = (s)=>document.querySelector(s);
-function fmtDate8(yyyymmdd){ if(!yyyymmdd||yyyymmdd.length<8) return yyyymmdd||''; return `${yyyymmdd.slice(0,4)}-${yyyymmdd.slice(4,6)}-${yyyymmdd.slice(6,8)}`; }
-function showNotice(msg){ const n=$('#notice'); if(!n) return; n.style.display='block'; n.innerHTML=msg; }
-function clearNotice(){ const n=$('#notice'); if(!n) return; n.style.display='none'; n.innerHTML=''; }
+const $ = (s) => document.querySelector(s);
+function fmtDate8(yyyymmdd) { 
+  if(!yyyymmdd || yyyymmdd.length < 8) return yyyymmdd || ''; 
+  return `${yyyymmdd.slice(0,4)}.${yyyymmdd.slice(4,6)}.${yyyymmdd.slice(6,8)}`; 
+}
+function showNotice(msg) { 
+  const n = $('#notice'); 
+  n.style.display = 'block'; 
+  n.innerHTML = msg; 
+}
+function clearNotice() { 
+  const n = $('#notice'); 
+  n.style.display = 'none'; 
+  n.innerHTML = ''; 
+}
 
-function buildUrl(baseUrl){
-  const u=new URL(baseUrl);
-  u.searchParams.set("callTp","L");
-  u.searchParams.set("pageNo","1");
-  u.searchParams.set("numOfRows","50");
-  u.searchParams.set("srchKeyCode","003"); // 제목+내용
-  const q=$('#q')?.value.trim(); if(q) u.searchParams.set('searchWrd', q);
-  const life=$('#lifeArray').value; const trg=$('#trgterIndvdlArray').value; const intr=$('#intrsThemaArray').value;
-  if(life) u.searchParams.set('lifeArray', life);
-  if(trg)  u.searchParams.set('trgterIndvdlArray', trg);
-  if(intr) u.searchParams.set('intrsThemaArray', intr);
-  u.searchParams.set('orderBy','popular');
+let toastTimer;
+function showToast(msg) {
+  const t = $('#toast');
+  t.innerText = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ===== API Build =====
+function getParamsObj(page=1) {
+  const p = {
+    callTp: "L",
+    pageNo: String(page),
+    numOfRows: "50",
+    srchKeyCode: "003", // 제목+내용
+    orderBy: "popular"
+  };
+  const q = $('#q').value.trim(); if(q) p.searchWrd = q;
+  const life = $('#lifeArray').value; if(life) p.lifeArray = life;
+  const trg = $('#trgterIndvdlArray').value; if(trg) p.trgterIndvdlArray = trg;
+  const intr = $('#intrsThemaArray').value; if(intr) p.intrsThemaArray = intr;
+  return p;
+}
+
+function buildWorkerParamUrl(params) {
+  const u = new URL(PROXY_BASE);
+  for(let k in params) u.searchParams.set(k, params[k]);
   return u.toString();
 }
 
-// Worker에 직접 파라미터로 전달할 URL(키는 서버에서 주입)
-function buildWorkerParamUrl(){
-  const u=new URL(PROXY_BASE);
-  u.searchParams.set("callTp","L");
-  u.searchParams.set("pageNo","1");
-  u.searchParams.set("numOfRows","50");
-  u.searchParams.set("srchKeyCode","003");
-  const q=$('#q')?.value.trim(); if(q) u.searchParams.set('searchWrd', q);
-  const life=$('#lifeArray').value; const trg=$('#trgterIndvdlArray').value; const intr=$('#intrsThemaArray').value;
-  if(life) u.searchParams.set('lifeArray', life);
-  if(trg)  u.searchParams.set('trgterIndvdlArray', trg);
-  if(intr) u.searchParams.set('intrsThemaArray', intr);
-  u.searchParams.set('orderBy','popular');
+function buildUrl(base, params) {
+  const u = new URL(base);
+  for(let k in params) u.searchParams.set(k, params[k]);
   return u.toString();
 }
 
-async function fetchList(){
-  // 시도 순서: 1) 파라미터 모드 → 2) ?url= 인코딩 모드 → 3) HTTP/HTTPS 전환
-  let lastErr=null, lastStatus=0, lastCT='';
+// ===== Fetch Logic =====
+async function fetchList(page) {
+  const params = getParamsObj(page);
+  let lastErr = null, lastStatus = 0;
 
-  // 1) 파라미터 모드 (권장)
-  try{
-    const workerUrl = buildWorkerParamUrl();
-    console.log('[FETCH:param]', workerUrl);
-    const ctrl=new AbortController(); const t=setTimeout(()=>ctrl.abort(), 15000);
-    const res = await fetch(workerUrl, { headers:{'Accept':'application/xml,text/xml;q=0.9,application/json;q=0.8,*/*;q=0.7'}, signal: ctrl.signal, mode:'cors', cache:'no-store' });
+  // 1) Parameter Mode via CF Worker
+  try {
+    const workerUrl = buildWorkerParamUrl(params);
+    const ctrl = new AbortController(); 
+    const t = setTimeout(() => ctrl.abort(), 15000);
+    const res = await fetch(workerUrl, { 
+      headers:{'Accept':'application/xml,text/xml,application/json,*/*'}, 
+      signal: ctrl.signal, mode:'cors', cache:'no-store' 
+    });
     clearTimeout(t);
-    lastStatus = res.status; lastCT = res.headers.get('content-type')||'';
+    lastStatus = res.status; 
     const text = await res.text();
     if(res.ok && text.trim()){
       const parsed = await parseUpstream(text);
       if(parsed.error) return { items: [], error: parsed.error };
-      if(parsed.items?.length) return { items: parsed.items };
+      if(parsed.items) return { items: parsed.items };
     } else {
       lastErr = new Error(`HTTP ${res.status}`);
     }
-  }catch(e){ lastErr=e; }
+  } catch(e) { lastErr = e; }
 
-  // 2) ?url= 인코딩 모드 (기존 방식)
-  const attempts=[BASE_URL_HTTPS, BASE_URL_HTTP];
-  for(const base of attempts){
-    const url = buildUrl(base);
+  // 2) ?url= Encode Mode Fallback
+  const attempts = [BASE_URL_HTTPS, BASE_URL_HTTP];
+  for(const base of attempts) {
+    const url = buildUrl(base, params);
     const target = PROXY_URL + encodeURIComponent(url);
-    console.log('[FETCH:url]', url);
-    try{
-      const ctrl=new AbortController(); const t=setTimeout(()=>ctrl.abort(), 15000);
-      const res = await fetch(target, { headers:{'Accept':'application/xml,text/xml;q=0.9,application/json;q=0.8,*/*;q=0.7'}, signal: ctrl.signal, mode:'cors', cache:'no-store' });
+    try {
+      const ctrl = new AbortController(); 
+      const t = setTimeout(() => ctrl.abort(), 15000);
+      const res = await fetch(target, { 
+        headers:{'Accept':'application/xml,text/xml,application/json,*/*'}, 
+        signal: ctrl.signal, mode:'cors', cache:'no-store' 
+      });
       clearTimeout(t);
-      lastStatus = res.status; lastCT = res.headers.get('content-type')||'';
+      lastStatus = res.status;
       const text = await res.text();
-      if(!res.ok){ lastErr = new Error(`HTTP ${res.status}`); continue; }
+      if(!res.ok) { lastErr = new Error(`HTTP ${res.status}`); continue; }
       const parsed = await parseUpstream(text);
       if(parsed.error) return { items: [], error: parsed.error };
       return { items: parsed.items || [] };
-    }catch(e){ lastErr=e; continue; }
+    } catch(e) { lastErr = e; continue; }
   }
 
-  const hint = `마지막 상태=${lastStatus}, CT=${lastCT}${lastErr?`, 에러=${lastErr.message}`:''}`;
-  return { items: [], error: `요청 실패. ${hint}` };
+  return { items: [], error: `서버와 통신할 수 없습니다. 다시 시도해주세요. (Status: ${lastStatus})` };
 }
 
-async function parseUpstream(text){
-  if(text.trim().startsWith('<')){
-    const doc=new DOMParser().parseFromString(text,'text/xml');
+async function parseUpstream(text) {
+  if(text.trim().startsWith('<')) {
+    const doc = new DOMParser().parseFromString(text,'text/xml');
     const errHeader = doc.querySelector('cmmMsgHeader, cmnMsgHeader');
-    if(errHeader){
+    if(errHeader) {
       const code = errHeader.querySelector('returnReasonCode')?.textContent?.trim();
-      const auth = errHeader.querySelector('returnAuthMsg')?.textContent||'';
-      const msg  = errHeader.querySelector('errMsg')?.textContent||'';
-      if(code==='30' || /SERVICE_KEY_IS_NOT_REGISTERED_ERROR/.test(auth)){
-        return { items: [], error: `API 인증 문제(code=${code}). 워커의 API_KEY를 확인하세요.` };
+      const auth = errHeader.querySelector('returnAuthMsg')?.textContent || '';
+      const msg  = errHeader.querySelector('errMsg')?.textContent || '';
+      if(code === '30' || /SERVICE_KEY_IS_NOT_REGISTERED_ERROR/.test(auth)) {
+        return { items: [], error: `API 인증 오류(code=${code}). 시스템 관리자에게 문의하세요.` };
       }
       if(code||auth||msg) return { items: [], error: `API 오류: ${msg || auth || code}` };
     }
-    const nodes=[...doc.getElementsByTagName('servList'), ...doc.getElementsByTagName('item')];
-    const pick=(n,arr)=>{ for(const nm of arr){ const el=n.getElementsByTagName(nm)[0]; if(el&&el.textContent&&el.textContent.trim()!=='') return el.textContent.trim(); } return ''; };
-    const items = nodes.map(n=>({
+    const nodes = [...doc.getElementsByTagName('servList'), ...doc.getElementsByTagName('item')];
+    const pick = (n,arr) => { for(const nm of arr){ const el=n.getElementsByTagName(nm)[0]; if(el&&el.textContent&&el.textContent.trim()!=='') return el.textContent.trim(); } return ''; };
+    const items = nodes.map(n => ({
       servNm: pick(n,['servNm','svcNm','serviceNm']),
       jurMnofNm: pick(n,['jurMnofNm','mngtMofNm','deptNm']),
       servDgst: pick(n,['servDgst','summary','servDtlCn']),
@@ -224,105 +750,174 @@ async function parseUpstream(text){
       svcfrstRegTs: pick(n,['svcfrstRegTs','regDate']),
       aplyMtdNm: pick(n,['aplyMtdNm']),
       aplyPrdCn: pick(n,['aplyPrdCn'])
-    })).filter(it=>it.servNm);
+    })).filter(it => it.servNm);
     return { items };
   }
-  try{ const json=JSON.parse(text); return { items: (json?.response?.body?.items?.item)||[] }; }catch{}
+  try { const json=JSON.parse(text); return { items: (json?.response?.body?.items?.item)||[] }; } catch{}
   return { items: [] };
 }
 
-function render(items) {
-  const box=$('#results'); box.innerHTML='';
-  if(!items||items.length===0){ box.innerHTML='<div class="card">검색 결과 없음</div>'; return; }
-  const iconFor=(it)=>{ const t=(it.lifeArray||"")+(it.intrsThemaArray||"");
-    if(/영유아|보육/.test(t)) return '🧸'; if(/아동|교육/.test(t)) return '📚'; if(/청소년|청년|일자리/.test(t)) return '💼'; if(/중장년|노년|돌봄/.test(t)) return '👵'; if(/주거/.test(t)) return '🏠'; if(/건강|신체건강|정신건강/.test(t)) return '🩺'; if(/서민금융|금융/.test(t)) return '💳'; if(/법률/.test(t)) return '⚖️'; if(/에너지/.test(t)) return '🔌'; return '🏛️'; };
-  window.currentItems = items;
-  items.forEach(it=>{
-    const yn=(it.onapPsbltYn||'').toUpperCase()==='Y' ? '<span class="badge y">온라인 신청 가능</span>' : ((it.onapPsbltYn||'').toUpperCase()==='N' ? '<span class="badge n">온라인 신청 불가</span>' : '-');
-    const link=it.servDtlLink||'#';
-    const card=document.createElement('div'); card.className='card';
-    card.innerHTML=`
-      <h3>${iconFor(it)} ${it.servNm}</h3>
-      <div class="meta">${it.jurMnofNm||''}</div>
-      <p>${it.servDgst||''}</p>
-      <div class="kv">
-        <div><b>연령대</b> ${it.lifeArray||'-'}</div>
-        <div><b>지원대상</b> ${it.trgterIndvdlArray||'-'}</div>
-        <div><b>관심주제</b> ${it.intrsThemaArray||'-'}</div>
-        <div><b>신청여부</b> ${yn}</div>
-        <div><b>신청기간</b> ${it.aplyPrdCn||'-'}</div>
-        <div><b>지원주기</b> ${it.sprtCycNm||'-'}</div>
-        <div><b>등록일</b> ${fmtDate8(it.svcfrstRegTs)||'-'}</div>
+// ===== Rendering =====
+function getIconFor(it) {
+  const t = (it.lifeArray||"")+(it.intrsThemaArray||"");
+  if(/영유아|보육/.test(t)) return '🧸'; 
+  if(/아동|교육/.test(t)) return '📚'; 
+  if(/청소년|청년|일자리/.test(t)) return '💼'; 
+  if(/중장년|노년|돌봄/.test(t)) return '👵'; 
+  if(/주거/.test(t)) return '🏠'; 
+  if(/건강|신체건강|정신건강/.test(t)) return '🩺'; 
+  if(/서민금융|금융/.test(t)) return '💳'; 
+  if(/법률/.test(t)) return '⚖️'; 
+  if(/에너지/.test(t)) return '🔌'; 
+  return '🏛️';
+}
+
+function renderItems(items, append = false) {
+  const box = $('#results');
+  if(!append) box.innerHTML = '';
+  
+  if(!items || items.length === 0) { 
+    if(!append) {
+      box.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-icon">📂</div>
+          <h3>해당 조건에 맞는 복지 서비스가 없습니다.</h3>
+          <p style="margin-top:8px;">다른 검색어나 조건으로 다시 시도해주세요.</p>
+        </div>`;
+    }
+    return; 
+  }
+
+  items.forEach(it => {
+    const isOnline = (it.onapPsbltYn||'').toUpperCase() === 'Y';
+    const isOffline = (it.onapPsbltYn||'').toUpperCase() === 'N';
+    const badge = isOnline ? '<span class="badge y">✓ 온라인 신청</span>' : (isOffline ? '<span class="badge n">✕ 방문 신청</span>' : '');
+    const link = it.servDtlLink || '#';
+    
+    // Create Tag strings
+    let tagsHtml = '';
+    if(it.lifeArray) tagsHtml += `<span class="tag">${it.lifeArray}</span>`;
+    if(it.trgterIndvdlArray) tagsHtml += `<span class="tag">${it.trgterIndvdlArray}</span>`;
+    if(it.intrsThemaArray) tagsHtml += `<span class="tag">${it.intrsThemaArray}</span>`;
+
+    const card = document.createElement('div'); 
+    card.className = 'card';
+    card.innerHTML = `
+      <div class="card-header">
+        <span class="card-icon">${getIconFor(it)}</span>
+        <h3 class="card-title">${it.servNm}</h3>
+        <div class="card-meta">${it.jurMnofNm || '관계부처'}</div>
       </div>
-      <div class="actions" style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
-        <a class="btn primary" href="${link}" target="_blank" rel="noopener">자세히 보기</a>
-        <button class="btn" onclick="navigator.clipboard?.writeText('${link.replace(/'/g,"&#39;")}').then(()=>alert('링크가 복사되었습니다.'))">링크 복사</button>
-      </div>`;
+      
+      <p class="card-desc" title="${it.servDgst||''}">${it.servDgst || '상세내용을 참조하세요.'}</p>
+      
+      <div class="tags">${tagsHtml}</div>
+      
+      <div class="info-list">
+        <div class="info-item">
+          <span class="info-label">신청기간</span>
+          <span class="info-val">${it.aplyPrdCn || '상시접수 등 (상세확인)'}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">신청여부</span>
+          <span class="info-val">${badge || '해당없음'}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">등록일</span>
+          <span class="info-val">${fmtDate8(it.svcfrstRegTs) || '-'}</span>
+        </div>
+      </div>
+      
+      <div class="card-actions">
+        <a class="btn btn-primary btn-card" href="${link}" target="_blank" rel="noopener">자세히 보기</a>
+        <button class="btn btn-outline btn-card" onclick="copyLink('${link.replace(/'/g,"\\'")}')">링크 복사</button>
+      </div>
+    `;
     box.appendChild(card);
   });
 }
 
-async function doSearch(){
-  clearNotice();
-  document.querySelector('#loader').classList.add('show');
-  const {items, error} = await fetchList();
-  document.querySelector('#loader').classList.remove('show');
-  if(error) showNotice(error);
-  render(items);
+function copyLink(link) {
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(link).then(() => showToast('📎 링크가 클립보드에 복사되었습니다.'));
+  } else {
+    // Fallback
+    const input = document.createElement('input');
+    input.value = link;
+    document.body.appendChild(input);
+    input.select();
+    document.execCommand('copy');
+    document.body.removeChild(input);
+    showToast('📎 링크가 복사되었습니다.');
+  }
 }
 
-// Events
-$('#runBtn').addEventListener('click', doSearch);
-$('#searchBtn').addEventListener('click', doSearch);
-$('#q')?.addEventListener('keydown', e=>{ if(e.key==='Enter') doSearch(); });
+async function doSearch(isLoadMore = false) {
+  if(isFetching) return;
+  isFetching = true;
 
-// ===== XLSX 내보내기 (라이브러리 없이 ZIP 생성) =====
+  if(!isLoadMore) {
+    currentPage = 1;
+    currentItems = [];
+    clearNotice();
+    $('#results').innerHTML = '';
+    $('#resultInfo').innerText = '검색 중...';
+  } else {
+    currentPage++;
+    $('#loadMoreBtn').innerText = '불러오는 중...';
+  }
+
+  $('#loader').classList.add('show');
+  $('#loadMoreSection').classList.remove('show');
+
+  const {items, error} = await fetchList(currentPage);
+  
+  $('#loader').classList.remove('show');
+  isFetching = false;
+
+  if(error) {
+    showNotice(error);
+    if(isLoadMore) currentPage--; // rollback
+  } else {
+    currentItems = isLoadMore ? currentItems.concat(items) : items;
+    renderItems(items, isLoadMore);
+    
+    // Check if there are more items to load (assuming 50 per page)
+    if(items.length >= 50) {
+      $('#loadMoreSection').classList.add('show');
+    }
+  }
+  
+  $('#loadMoreBtn').innerText = '더보기 (다음 50개) ↓';
+  $('#resultInfo').innerText = `현재 표시된 항목 수: ${currentItems.length}개`;
+}
+
+// ===== Events =====
+$('#searchBtn').addEventListener('click', () => doSearch(false));
+$('#loadMoreBtn').addEventListener('click', () => doSearch(true));
+$('#q').addEventListener('keydown', e => { if(e.key === 'Enter') doSearch(false); });
+document.querySelectorAll('.filter-select').forEach(el => {
+  el.addEventListener('change', () => doSearch(false));
+});
+
+// ===== XLSX Export (Original raw zip implementation) =====
 function crc32(str){ const table=(function(){let c,t=[];for(let n=0;n<256;n++){c=n;for(let k=0;k<8;k++){c=((c&1)?(0xEDB88320^(c>>>1)):(c>>>1));}t[n]=c>>>0;}return t;})(); let crc=-1; for(let i=0;i<str.length;i++){const code=str.charCodeAt(i); crc=(crc>>>8)^table[(crc^code)&0xFF];} return (crc^(-1))>>>0; }
 function strToUint8(str){ const a=new Uint8Array(str.length); for(let i=0;i<str.length;i++) a[i]=str.charCodeAt(i)&0xFF; return a; }
 function dateToDos(t){ const d=new Date(t||Date.now()); const y=d.getFullYear()>1980? d.getFullYear()-1980:0; const time=(d.getHours()<<11)|(d.getMinutes()<<5)|(Math.floor(d.getSeconds()/2)); const date=(y<<9)|((d.getMonth()+1)<<5)|d.getDate(); return {dosTime:time,dosDate:date}; }
-function makeZip(files){ const enc=strToUint8; const parts=[]; const central=[]; let offset=0; const now=dateToDos(); files.forEach(f=>{ const data=enc(f.content); const crc=crc32(f.content); const name=enc(f.name); const lf=new Uint8Array(30+name.length); const v=new DataView(lf.buffer); v.setUint32(0,0x04034b50,true); v.setUint16(4,20,true); v.setUint16(6,0,true); v.setUint16(8,0,true); v.setUint16(10,now.dosTime,true); v.setUint16(12,now.dosDate,true); v.setUint32(14,crc,true); v.setUint32(18,data.length,true); v.setUint32(22,data.length,true); v.setUint16(26,name.length,true); v.setUint16(28,0,true); lf.set(name,30); parts.push(lf); offset+=lf.length; parts.push(data); offset+=data.length; const cd=new Uint8Array(46+name.length); const cv=new DataView(cd.buffer); cv.setUint32(0,0x02014b50,true); cv.setUint16(4,20,true); cv.setUint16(6,20,true); cv.setUint16(8,0,true); cv.setUint16(10,0,true); cv.setUint16(12,now.dosTime,true); cv.setUint16(14,now.dosDate,true); cv.setUint32(16,crc,true); cv.setUint32(20,data.length,true); cv.setUint32(24,data.length,true); cv.setUint16(28,name.length,true); cv.setUint16(30,0,true); cv.setUint16(32,0,true); cv.setUint16(34,0,true); cv.setUint16(36,0,true); cv.setUint32(38,0,true); cv.setUint32(42, f._offset = (offset-(lf.length+data.length)), true); cd.set(name,46); central.push(cd); }); const centralSize=central.reduce((s,a)=>s+a.length,0); const centralOffset=offset; central.forEach(c=>{ parts.push(c); offset+=c.length; }); const eocd=new Uint8Array(22); const ev=new DataView(eocd.buffer); ev.setUint32(0,0x06054b50,true); ev.setUint16(4,0,true); ev.setUint16(6,0,true); ev.setUint16(8,window.currentItems?.length||0,true); ev.setUint16(10,window.currentItems?.length||0,true); ev.setUint32(12,centralSize,true); ev.setUint32(16,centralOffset,true); ev.setUint16(20,0,true); parts.push(eocd); let total=0; parts.forEach(p=> total+=p.length); const out=new Uint8Array(total); let pos=0; parts.forEach(p=>{ out.set(p,pos); pos+=p.length; }); return new Blob([out], { type:'application/zip' }); }
+function makeZip(files){ const enc=strToUint8; const parts=[]; const central=[]; let offset=0; const now=dateToDos(); files.forEach(f=>{ const data=enc(f.content); const crc=crc32(f.content); const name=enc(f.name); const lf=new Uint8Array(30+name.length); const v=new DataView(lf.buffer); v.setUint32(0,0x04034b50,true); v.setUint16(4,20,true); v.setUint16(6,0,true); v.setUint16(8,0,true); v.setUint16(10,now.dosTime,true); v.setUint16(12,now.dosDate,true); v.setUint32(14,crc,true); v.setUint32(18,data.length,true); v.setUint32(22,data.length,true); v.setUint16(26,name.length,true); v.setUint16(28,0,true); lf.set(name,30); parts.push(lf); offset+=lf.length; parts.push(data); offset+=data.length; const cd=new Uint8Array(46+name.length); const cv=new DataView(cd.buffer); cv.setUint32(0,0x02014b50,true); cv.setUint16(4,20,true); cv.setUint16(6,20,true); cv.setUint16(8,0,true); cv.setUint16(10,0,true); cv.setUint16(12,now.dosTime,true); cv.setUint16(14,now.dosDate,true); cv.setUint32(16,crc,true); cv.setUint32(20,data.length,true); cv.setUint32(24,data.length,true); cv.setUint16(28,name.length,true); cv.setUint16(30,0,true); cv.setUint16(32,0,true); cv.setUint16(34,0,true); cv.setUint16(36,0,true); cv.setUint32(38,0,true); cv.setUint32(42, f._offset = (offset-(lf.length+data.length)), true); cd.set(name,46); central.push(cd); }); const centralSize=central.reduce((s,a)=>s+a.length,0); const centralOffset=offset; central.forEach(c=>{ parts.push(c); offset+=c.length; }); const eocd=new Uint8Array(22); const ev=new DataView(eocd.buffer); ev.setUint32(0,0x06054b50,true); ev.setUint16(4,0,true); ev.setUint16(6,0,true); ev.setUint16(8,currentItems?.length||0,true); ev.setUint16(10,currentItems?.length||0,true); ev.setUint32(12,centralSize,true); ev.setUint32(16,centralOffset,true); ev.setUint16(20,0,true); parts.push(eocd); let total=0; parts.forEach(p=> total+=p.length); const out=new Uint8Array(total); let pos=0; parts.forEach(p=>{ out.set(p,pos); pos+=p.length; }); return new Blob([out], { type:'application/zip' }); }
 function buildXlsx(items){
   const esc=s=>String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   const rows=[["서비스명","소관부처","요약","연령대","지원대상","관심주제","신청가능","신청기간","지원주기","등록일","상세링크"]]
     .concat(items.map(it=>[it.servNm||'',it.jurMnofNm||'',it.servDgst||'',it.lifeArray||'',it.trgterIndvdlArray||'',it.intrsThemaArray||'',(it.onapPsbltYn||''),it.aplyPrdCn||'',it.sprtCycNm||'',fmtDate8(it.svcfrstRegTs)||'',it.servDtlLink||'']));
-  let sheet=`<?xml version="1.0" encoding="UTF-8"?>
-<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>`;
+  let sheet=`<?xml version="1.0" encoding="UTF-8"?>\n<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>`;
   rows.forEach((r,ri)=>{ sheet+=`<row r="${ri+1}">`; r.forEach((c,ci)=>{ const col=String.fromCharCode(65+(ci%26))+(ri+1); sheet+=`<c r="${col}" t="inlineStr"><is><t>${esc(c)}</t></is></c>`; }); sheet+=`</row>`; });
   sheet+=`</sheetData></worksheet>`;
-  const contentTypes=`<?xml version="1.0" encoding="UTF-8"?>
-<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
-  <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
-  <Default Extension="xml" ContentType="application/xml"/>
-  <Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>
-  <Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>
-  <Override PartName="/docProps/core.xml" ContentType="application/vnd.openxmlformats-package.core-properties+xml"/>
-  <Override PartName="/docProps/app.xml" ContentType="application/vnd.openxmlformats-officedocument.extended-properties+xml"/>
-</Types>`;
-  const rels=`<?xml version="1.0" encoding="UTF-8"?>
-<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
-  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="/xl/workbook.xml"/>
-</Relationships>`;
-  const wb=`<?xml version="1.0" encoding="UTF-8"?>
-<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
-  <sheets>
-    <sheet name="welfare" sheetId="1" r:id="rId1"/>
-  </sheets>
-</workbook>`;
-  const wbRels=`<?xml version="1.0" encoding="UTF-8"?>
-<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
-  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/>
-</Relationships>`;
-  const core=`<?xml version="1.0" encoding="UTF-8"?>
-<cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:dcmitype="http://purl.org/dc/dcmitype/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <dc:title>welfare_services</dc:title>
-  <dc:creator>정부 복지지원 서비스 검색기</dc:creator>
-  <cp:lastModifiedBy>정부 복지지원 서비스 검색기</cp:lastModifiedBy>
-  <dcterms:created xsi:type="dcterms:W3CDTF">${new Date().toISOString()}</dcterms:created>
-</cp:coreProperties>`;
-  const app=`<?xml version="1.0" encoding="UTF-8"?>
-<Properties xmlns="http://schemas.openxmlformats.org/officeDocument/2006/extended-properties" xmlns:vt="http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes">
-  <Application>WebApp</Application>
-</Properties>`;
+  const contentTypes=`<?xml version="1.0" encoding="UTF-8"?>\n<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">\n  <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>\n  <Default Extension="xml" ContentType="application/xml"/>\n  <Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>\n  <Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>\n  <Override PartName="/docProps/core.xml" ContentType="application/vnd.openxmlformats-package.core-properties+xml"/>\n  <Override PartName="/docProps/app.xml" ContentType="application/vnd.openxmlformats-officedocument.extended-properties+xml"/>\n</Types>`;
+  const rels=`<?xml version="1.0" encoding="UTF-8"?>\n<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">\n  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="/xl/workbook.xml"/>\n</Relationships>`;
+  const wb=`<?xml version="1.0" encoding="UTF-8"?>\n<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">\n  <sheets>\n    <sheet name="welfare" sheetId="1" r:id="rId1"/>\n  </sheets>\n</workbook>`;
+  const wbRels=`<?xml version="1.0" encoding="UTF-8"?>\n<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">\n  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/>\n</Relationships>`;
+  const core=`<?xml version="1.0" encoding="UTF-8"?>\n<cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:dcmitype="http://purl.org/dc/dcmitype/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">\n  <dc:title>welfare_services</dc:title>\n  <dc:creator>정부 복지지원 서비스 검색기</dc:creator>\n  <cp:lastModifiedBy>정부 복지지원 서비스 검색기</cp:lastModifiedBy>\n  <dcterms:created xsi:type="dcterms:W3CDTF">${new Date().toISOString()}</dcterms:created>\n</cp:coreProperties>`;
+  const app=`<?xml version="1.0" encoding="UTF-8"?>\n<Properties xmlns="http://schemas.openxmlformats.org/officeDocument/2006/extended-properties" xmlns:vt="http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes">\n  <Application>WebApp</Application>\n</Properties>`;
   const files=[
     {name:"[Content_Types].xml",content:contentTypes},
     {name:"_rels/.rels",content:rels},
@@ -334,26 +929,16 @@ function buildXlsx(items){
   ];
   return makeZip(files);
 }
-function exportToXlsx(){
-  if(!window.currentItems||window.currentItems.length===0){ alert('내보낼 데이터가 없습니다.'); return; }
-  const blob=buildXlsx(window.currentItems);
+$('#exportBtn').addEventListener('click', () => {
+  if(!currentItems || currentItems.length===0){ showToast('⚠️ 내보낼 데이터가 없습니다.'); return; }
+  const blob=buildXlsx(currentItems);
   const url=URL.createObjectURL(blob); const a=document.createElement('a');
-  a.href=url; a.download='복지서비스목록.xlsx'; a.click(); URL.revokeObjectURL(url);
-}
-$('#exportBtn').addEventListener('click', exportToXlsx);
+  a.href=url; a.download='맞춤형_복지서비스.xlsx'; a.click(); URL.revokeObjectURL(url);
+});
 
-// === Search button wiring (missing before) ===
-const runBtn = document.getElementById('runBtn');
-const searchBtn = document.getElementById('searchBtn');
-const qInput = document.getElementById('q');
-if (runBtn) runBtn.addEventListener('click', doSearch);
-if (searchBtn) searchBtn.addEventListener('click', doSearch);
-if (qInput) qInput.addEventListener('keydown', (e)=>{ if(e.key==='Enter'){ e.preventDefault(); doSearch(); }});
-
-// Auto-run a lightweight fetch on load (no keyword) so user sees something
-window.addEventListener('DOMContentLoaded', ()=>{
-  // optional: only when nothing selected
-  doSearch();
+// Auto-run on load
+window.addEventListener('DOMContentLoaded', () => {
+  doSearch(false);
 });
 </script>
 </body>
