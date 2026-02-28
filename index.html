@@ -1,77 +1,59 @@
 <!DOCTYPE html>
-<html lang="ko" data-theme="light">
+<html lang="ko" data-theme="dark">
 
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
-    <title>정부 복지지원 서비스 🔎</title>
+    <title>정부 복지지원 서비스 검색기</title>
     <meta name="description" content="나를 위한 맞춤형 정부 복지 서비스를 한 곳에서 쉽게 검색하세요." />
 
-    <!-- Pretendard Font -->
     <link rel="stylesheet" as="style" crossorigin
         href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" />
 
     <style>
         :root {
             --font-family: 'Pretendard Variable', Pretendard, system-ui, -apple-system, sans-serif;
-            --primary: #3b82f6;
-            /* Blue 500 */
-            --primary-hover: #2563eb;
-            /* Blue 600 */
-            --secondary: #10b981;
-            /* Emerald 500 */
+            --primary: #111111;
+            --primary-hover: #333333;
             --surface: #ffffff;
-            --bg: #f8fafc;
-            /* Slate 50 */
-            --text-main: #0f172a;
-            /* Slate 900 */
-            --text-muted: #64748b;
-            /* Slate 500 */
-            --border: #e2e8f0;
-            /* Slate 200 */
-            --border-focus: #cbd5e1;
-            /* Slate 300 */
+            --bg: #f5f5f5;
+            --text-main: #111111;
+            --text-muted: #666666;
+            --border: #e0e0e0;
+            --border-focus: #999999;
             --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
-            --card-radius: 16px;
-            --hero-bg: linear-gradient(135deg, #e0f2fe 0%, #dbeafe 100%);
-            --hero-text: #0ea5e9;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            --card-radius: 12px;
+            --hero-bg: #ececec;
+            --hero-text: #444444;
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
-            --badge-y-bg: #dcfce7;
-            --badge-y-text: #166534;
-            --badge-n-bg: #fee2e2;
-            --badge-n-text: #991b1b;
+            --badge-y-bg: #e8e8e8;
+            --badge-y-text: #111111;
+            --badge-n-bg: #f5f5f5;
+            --badge-n-text: #888888;
         }
 
         [data-theme="dark"] {
-            --primary: #60a5fa;
-            /* Blue 400 */
-            --primary-hover: #3b82f6;
-            /* Blue 500 */
-            --surface: #1e293b;
-            /* Slate 800 */
-            --bg: #0f172a;
-            /* Slate 900 */
-            --text-main: #f8fafc;
-            /* Slate 50 */
-            --text-muted: #94a3b8;
-            /* Slate 400 */
-            --border: #334155;
-            /* Slate 700 */
-            --border-focus: #475569;
-            /* Slate 600 */
-            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
-            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
-            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.4);
-            --hero-bg: linear-gradient(135deg, #0c4a6e 0%, #172554 100%);
-            --hero-text: #7dd3fc;
+            --primary: #ffffff;
+            --primary-hover: #cccccc;
+            --surface: #1e1e1e;
+            --bg: #121212;
+            --text-main: #f5f5f5;
+            --text-muted: #9e9e9e;
+            --border: #333333;
+            --border-focus: #666666;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+            --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+            --hero-bg: #181818;
+            --hero-text: #aaaaaa;
 
-            --badge-y-bg: #14532d;
-            --badge-y-text: #86efac;
-            --badge-n-bg: #7f1d1d;
-            --badge-n-text: #fca5a5;
+            --badge-y-bg: #333333;
+            --badge-y-text: #ffffff;
+            --badge-n-bg: #1e1e1e;
+            --badge-n-text: #666666;
         }
 
         * {
@@ -96,7 +78,7 @@
             z-index: 50;
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
-            background-color: rgba(var(--bg), 0.8);
+            background-color: color-mix(in srgb, var(--surface) 80%, transparent);
             border-bottom: 1px solid var(--border);
             padding: 1rem 1.5rem;
             display: flex;
@@ -108,28 +90,19 @@
             font-weight: 800;
             font-size: 1.25rem;
             letter-spacing: -0.02em;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .logo span {
-            color: var(--primary);
         }
 
         .theme-toggle {
-            background: var(--surface);
+            background: transparent;
             border: 1px solid var(--border);
             color: var(--text-main);
-            padding: 8px 16px;
-            border-radius: 9999px;
+            padding: 6px 14px;
+            border-radius: 6px;
             cursor: pointer;
             font-weight: 600;
-            font-size: 0.875rem;
+            font-size: 0.85rem;
             transition: var(--transition);
-            display: flex;
-            align-items: center;
-            gap: 6px;
+            letter-spacing: 0.5px;
         }
 
         .theme-toggle:hover {
@@ -141,24 +114,23 @@
             background: var(--hero-bg);
             padding: 4rem 1.5rem;
             text-align: center;
-            border-radius: 0 0 2.5rem 2.5rem;
-            margin-bottom: -2rem;
-            padding-bottom: 6rem;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 2rem;
         }
 
         .hero h1 {
             font-size: 2.5rem;
             font-weight: 800;
-            margin-bottom: 1rem;
-            letter-spacing: -0.02em;
+            margin-bottom: 0.75rem;
+            letter-spacing: -0.03em;
         }
 
         .hero p {
-            font-size: 1.125rem;
+            font-size: 1.1rem;
             color: var(--hero-text);
             max-width: 600px;
             margin: 0 auto;
-            font-weight: 500;
+            font-weight: 400;
             word-break: keep-all;
         }
 
@@ -175,11 +147,11 @@
             background: var(--surface);
             border-radius: var(--card-radius);
             padding: 1.5rem;
-            box-shadow: var(--shadow-lg);
+            box-shadow: var(--shadow-sm);
             border: 1px solid var(--border);
             display: flex;
             flex-direction: column;
-            gap: 1rem;
+            gap: 1.25rem;
             margin-bottom: 2.5rem;
         }
 
@@ -193,21 +165,11 @@
             position: relative;
         }
 
-        .search-input-wrapper svg {
-            position: absolute;
-            left: 1rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-muted);
-            width: 20px;
-            height: 20px;
-        }
-
         .search-input {
             width: 100%;
-            padding: 1rem 1rem 1rem 3rem;
+            padding: 1rem 1rem 1rem 1rem;
             border: 1px solid var(--border);
-            border-radius: 12px;
+            border-radius: 8px;
             background: var(--bg);
             color: var(--text-main);
             font-size: 1rem;
@@ -218,45 +180,43 @@
 
         .search-input:focus {
             outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+            border-color: var(--border-focus);
         }
 
         .btn {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            padding: 0.75rem 1.5rem;
-            border-radius: 12px;
+            padding: 0.85rem 1.75rem;
+            border-radius: 8px;
             font-weight: 600;
-            font-size: 1rem;
+            font-size: 0.95rem;
             cursor: pointer;
             transition: var(--transition);
             border: 1px solid transparent;
             font-family: var(--font-family);
+            letter-spacing: 0.5px;
             white-space: nowrap;
         }
 
         .btn-primary {
             background: var(--primary);
-            color: #fff;
+            color: var(--bg);
         }
 
         .btn-primary:hover {
             background: var(--primary-hover);
-            transform: translateY(-1px);
+            color: var(--bg);
         }
 
         .btn-outline {
-            background: var(--surface);
+            background: transparent;
             border-color: var(--border);
             color: var(--text-main);
         }
 
         .btn-outline:hover {
-            background: var(--bg);
-            border-color: var(--text-muted);
+            background: var(--border);
         }
 
         .filters-grid {
@@ -267,15 +227,15 @@
 
         select.filter-select {
             width: 100%;
-            padding: 0.875rem 1rem;
+            padding: 0.85rem 1rem;
             border: 1px solid var(--border);
-            border-radius: 12px;
+            border-radius: 8px;
             background-color: var(--bg);
             color: var(--text-main);
             font-size: 0.95rem;
             font-weight: 500;
             appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
             background-repeat: no-repeat;
             background-position: right 1rem center;
             background-size: 1em;
@@ -285,7 +245,7 @@
 
         select.filter-select:focus {
             outline: none;
-            border-color: var(--primary);
+            border-color: var(--border-focus);
         }
 
         .panel-footer {
@@ -298,8 +258,9 @@
         }
 
         .result-info {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: var(--text-muted);
+            font-weight: 500;
         }
 
         /* Results Grid */
@@ -313,51 +274,42 @@
             background: var(--surface);
             border: 1px solid var(--border);
             border-radius: var(--card-radius);
-            padding: 1.5rem;
-            box-shadow: var(--shadow);
+            padding: 1.75rem;
+            box-shadow: var(--shadow-sm);
             transition: var(--transition);
             display: flex;
             flex-direction: column;
             position: relative;
-            overflow: hidden;
         }
 
         .card:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-lg);
             border-color: var(--border-focus);
+            box-shadow: var(--shadow-lg);
         }
 
-        .card-header {
-            margin-bottom: 1rem;
-        }
-
-        .card-icon {
-            font-size: 2rem;
+        .card-meta {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            letter-spacing: 0.5px;
             margin-bottom: 0.5rem;
-            display: block;
+            text-transform: uppercase;
         }
 
         .card-title {
-            font-size: 1.25rem;
+            font-size: 1.2rem;
             font-weight: 700;
             line-height: 1.4;
-            margin-bottom: 0.25rem;
+            margin-bottom: 0.75rem;
             color: var(--text-main);
             word-break: keep-all;
         }
 
-        .card-meta {
-            font-size: 0.875rem;
-            color: var(--text-muted);
-            font-weight: 500;
-        }
-
         .card-desc {
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             color: var(--text-muted);
-            margin-bottom: 1.25rem;
-            line-height: 1.5;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
             display: -webkit-box;
             -webkit-line-clamp: 3;
             -webkit-box-orient: vertical;
@@ -368,14 +320,14 @@
         .tags {
             display: flex;
             flex-wrap: wrap;
-            gap: 6px;
-            margin-bottom: 1.25rem;
+            gap: 4px;
+            margin-bottom: 1.5rem;
         }
 
         .tag {
-            font-size: 0.75rem;
-            padding: 4px 10px;
-            border-radius: 9999px;
+            font-size: 0.7rem;
+            padding: 4px 8px;
+            border-radius: 4px;
             background: var(--bg);
             color: var(--text-muted);
             font-weight: 600;
@@ -383,28 +335,26 @@
         }
 
         .info-list {
-            background: var(--bg);
-            border-radius: 12px;
-            padding: 1rem;
-            font-size: 0.875rem;
+            border-top: 1px solid var(--border);
+            padding-top: 1.25rem;
+            font-size: 0.85rem;
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 10px;
             margin-bottom: 1.5rem;
-            border: 1px solid var(--border);
         }
 
         .info-item {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            gap: 12px;
+            gap: 10px;
         }
 
         .info-label {
             color: var(--text-muted);
             font-weight: 600;
-            min-width: 65px;
+            min-width: 60px;
         }
 
         .info-val {
@@ -417,10 +367,11 @@
         .badge {
             display: inline-flex;
             align-items: center;
-            padding: 2px 8px;
-            border-radius: 999px;
-            font-size: 0.75rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.7rem;
             font-weight: 700;
+            letter-spacing: 0.5px;
         }
 
         .badge.y {
@@ -431,19 +382,19 @@
         .badge.n {
             background: var(--badge-n-bg);
             color: var(--badge-n-text);
+            border: 1px solid var(--border);
         }
 
         .card-actions {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 8px;
-            margin-top: auto;
         }
 
-        .btn-card {
+        .card-actions .btn {
             padding: 0.6rem;
-            font-size: 0.9rem;
-            border-radius: 10px;
+            font-size: 0.85rem;
+            border-radius: 6px;
         }
 
         /* Load More */
@@ -457,12 +408,12 @@
             display: block;
         }
 
-        /* Loader / Messages */
+        /* Loader */
         .loader-overlay {
             display: none;
             text-align: center;
-            padding: 3rem 0;
-            color: var(--primary);
+            padding: 4rem 0;
+            color: var(--text-muted);
         }
 
         .loader-overlay.show {
@@ -470,9 +421,9 @@
         }
 
         .spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid var(--border);
+            width: 30px;
+            height: 30px;
+            border: 3px solid var(--border);
             border-top-color: var(--primary);
             border-radius: 50%;
             animation: spin 1s linear infinite;
@@ -487,18 +438,12 @@
 
         .empty-state {
             text-align: center;
-            padding: 4rem 2rem;
+            padding: 5rem 2rem;
             background: var(--surface);
             border-radius: var(--card-radius);
             border: 1px dashed var(--border-focus);
             color: var(--text-muted);
             grid-column: 1 / -1;
-        }
-
-        .empty-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            opacity: 0.5;
         }
 
         /* Toast Notification */
@@ -507,16 +452,17 @@
             bottom: 2rem;
             left: 50%;
             transform: translateX(-50%) translateY(100px);
-            background: #1e293b;
-            color: #f8fafc;
+            background: var(--primary);
+            color: var(--bg);
             padding: 12px 24px;
-            border-radius: 999px;
+            border-radius: 6px;
             font-weight: 600;
-            font-size: 0.9rem;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+            font-size: 0.85rem;
+            box-shadow: var(--shadow-lg);
             transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
             z-index: 100;
             opacity: 0;
+            letter-spacing: 0.5px;
         }
 
         #toast.show {
@@ -524,41 +470,34 @@
             opacity: 1;
         }
 
-        [data-theme="dark"] #toast {
-            background: #e2e8f0;
-            color: #0f172a;
-        }
-
-        /* Error Note */
+        /* Error Notice */
         .notice {
             display: none;
             padding: 1rem;
             margin-bottom: 1.5rem;
-            border-radius: 12px;
-            background: #fff7ed;
-            border: 1px solid #fed7aa;
-            color: #9a3412;
+            border-radius: 8px;
+            background: rgba(220, 38, 38, 0.1);
+            border: 1px solid rgba(220, 38, 38, 0.3);
+            color: #dc2626;
             font-weight: 500;
+            font-size: 0.9rem;
         }
 
         [data-theme="dark"] .notice {
-            background: #431407;
-            border-color: #7c2d12;
-            color: #fed7aa;
+            color: #f87171;
         }
 
-        /* Responsive */
         @media (max-width: 768px) {
             .search-top {
                 flex-direction: column;
             }
 
             .hero {
-                padding: 3rem 1rem 5rem 1rem;
+                padding: 3rem 1rem;
             }
 
             .hero h1 {
-                font-size: 2rem;
+                font-size: 1.75rem;
             }
         }
     </style>
@@ -566,53 +505,53 @@
 
 <body>
 
-    <!-- Header -->
     <header class="header">
-        <div class="logo">
-            🏛️ 정부 <span>복지지원</span> 검색기
-        </div>
+        <div class="logo">복지지원 검색</div>
         <button id="themeBtn" class="theme-toggle" aria-label="테마 전환">
-            <span id="themeIcon">🌗</span> <span class="theme-text">테마 전환</span>
+            THEME
         </button>
     </header>
 
-    <!-- Hero -->
     <section class="hero">
-        <h1>나에게 맞는 맞춤형 복지, 찾기</h1>
-        <p>복잡한 정부 복지 혜택, 키워드와 조건으로 한 번에 찾아보고 신청하세요.</p>
+        <h1>맞춤형 복지 서비스</h1>
+        <p>키워드와 조건으로 필요한 복지 혜택을 한 번에 확인하세요.</p>
     </section>
 
-    <!-- Main Content -->
     <main class="container">
 
-        <!-- Search Panel -->
         <div class="search-panel">
             <div class="search-top">
                 <div class="search-input-wrapper">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                    </svg>
-                    <input id="q" type="search" class="search-input" placeholder="검색어 (예: 청년, 주거, 장학금 등)"
+                    <input id="q" type="search" class="search-input" placeholder="검색어 (예: 청년, 주거, 장학금)"
                         aria-label="검색어 입력" />
                 </div>
-                <button id="searchBtn" class="btn btn-primary">검색하기</button>
+                <button id="searchBtn" class="btn btn-primary">검색</button>
             </div>
 
             <div class="filters-grid">
-                <select id="lifeArray" class="filter-select" title="연령대">
-                    <option value="">👤 연령대 전체</option>
-                    <option value="001">영유아</option>
-                    <option value="002">아동</option>
-                    <option value="003">청소년</option>
-                    <option value="004">청년</option>
-                    <option value="005">중장년</option>
-                    <option value="006">노년</option>
-                    <option value="007">임신·출산</option>
+                <select id="regionSelect" class="filter-select" title="지역">
+                    <option value="">지역 전체</option>
+                    <option value="서울">서울특별시</option>
+                    <option value="부산">부산광역시</option>
+                    <option value="대구">대구광역시</option>
+                    <option value="인천">인천광역시</option>
+                    <option value="광주">광주광역시</option>
+                    <option value="대전">대전광역시</option>
+                    <option value="울산">울산광역시</option>
+                    <option value="세종">세종특별자치시</option>
+                    <option value="경기">경기도</option>
+                    <option value="강원">강원특별자치도</option>
+                    <option value="충북">충청북도</option>
+                    <option value="충남">충청남도</option>
+                    <option value="전북">전북특별자치도</option>
+                    <option value="전남">전라남도</option>
+                    <option value="경북">경상북도</option>
+                    <option value="경남">경상남도</option>
+                    <option value="제주">제주특별자치도</option>
                 </select>
 
                 <select id="trgterIndvdlArray" class="filter-select" title="지원대상">
-                    <option value="">🎯 지원대상 전체</option>
+                    <option value="">지원대상 전체</option>
                     <option value="010">다문화·탈북민</option>
                     <option value="020">다자녀</option>
                     <option value="030">보훈대상자</option>
@@ -622,7 +561,7 @@
                 </select>
 
                 <select id="intrsThemaArray" class="filter-select" title="관심주제">
-                    <option value="">📌 관심주제 전체</option>
+                    <option value="">관심주제 전체</option>
                     <option value="010">신체건강</option>
                     <option value="020">정신건강</option>
                     <option value="030">생활지원</option>
@@ -642,43 +581,37 @@
             </div>
 
             <div class="panel-footer">
-                <div class="result-info" id="resultInfo">검색을 시작해보세요.</div>
-                <button id="exportBtn" class="btn btn-outline" style="padding:0.5rem 1rem;font-size:0.875rem;">
-                    📊 엑셀 저장
+                <div class="result-info" id="resultInfo">검색을 시작하세요.</div>
+                <button id="exportBtn" class="btn btn-outline" style="padding:0.4rem 1rem;font-size:0.8rem;">
+                    데이터 저장 (.xlsx)
                 </button>
             </div>
         </div>
 
-        <!-- Error Notice -->
         <div id="notice" class="notice"></div>
 
-        <!-- Results Grid -->
         <div id="results" class="grid"></div>
 
-        <!-- Loading State -->
         <div id="loader" class="loader-overlay">
             <div class="spinner"></div>
-            <div style="font-weight: 600;">데이터를 불러오는 중입니다...</div>
+            <div>데이터를 불러오는 중입니다</div>
         </div>
 
-        <!-- Load More -->
         <div id="loadMoreSection" class="load-more-container">
-            <button id="loadMoreBtn" class="btn btn-outline" style="border-radius:999px; padding: 0.75rem 2rem;">
-                더보기 (다음 50개) ↓
+            <button id="loadMoreBtn" class="btn btn-outline" style="width: 100%; max-width: 300px;">
+                더보기
             </button>
         </div>
 
     </main>
 
-    <!-- Toast -->
-    <div id="toast">메시지</div>
+    <div id="toast">메일지</div>
 
     <script>
-        // ===== Theme Management =====
         const themeBtn = document.getElementById('themeBtn');
         const initTheme = () => {
             const saved = localStorage.getItem('theme');
-            const dflt = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            const dflt = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'dark';
             document.documentElement.dataset.theme = saved || dflt;
         };
         initTheme();
@@ -689,20 +622,16 @@
             try { localStorage.setItem('theme', next); } catch (e) { }
         });
 
-        // ===== Logic State =====
         let currentItems = [];
         let currentPage = 1;
         let hasMore = true;
         let isFetching = false;
-        let lastSearchParams = null;
 
-        // ===== Config =====
         const BASE_URL_HTTPS = "https://apis.data.go.kr/B554287/NationalWelfareInformationsV001/NationalWelfarelistV001";
         const BASE_URL_HTTP = "http://apis.data.go.kr/B554287/NationalWelfareInformationsV001/NationalWelfarelistV001";
         const PROXY_URL = "https://bokjiro-api.dynamicjmh.workers.dev/?url=";
         const PROXY_BASE = "https://bokjiro-api.dynamicjmh.workers.dev/";
 
-        // ===== Utils =====
         const $ = (s) => document.querySelector(s);
         function fmtDate8(yyyymmdd) {
             if (!yyyymmdd || yyyymmdd.length < 8) return yyyymmdd || '';
@@ -714,9 +643,7 @@
             n.innerHTML = msg;
         }
         function clearNotice() {
-            const n = $('#notice');
-            n.style.display = 'none';
-            n.innerHTML = '';
+            $('#notice').style.display = 'none';
         }
 
         let toastTimer;
@@ -728,17 +655,22 @@
             toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
         }
 
-        // ===== API Build =====
         function getParamsObj(page = 1) {
             const p = {
                 callTp: "L",
                 pageNo: String(page),
                 numOfRows: "50",
-                srchKeyCode: "003", // 제목+내용
+                srchKeyCode: "003",
                 orderBy: "popular"
             };
-            const q = $('#q').value.trim(); if (q) p.searchWrd = q;
-            const life = $('#lifeArray').value; if (life) p.lifeArray = life;
+
+            let q = $('#q').value.trim();
+            const region = $('#regionSelect').value;
+            if (region) {
+                q = q ? `${region} ${q}` : region;
+            }
+
+            if (q) p.searchWrd = q;
             const trg = $('#trgterIndvdlArray').value; if (trg) p.trgterIndvdlArray = trg;
             const intr = $('#intrsThemaArray').value; if (intr) p.intrsThemaArray = intr;
             return p;
@@ -756,12 +688,10 @@
             return u.toString();
         }
 
-        // ===== Fetch Logic =====
         async function fetchList(page) {
             const params = getParamsObj(page);
             let lastErr = null, lastStatus = 0;
 
-            // 1) Parameter Mode via CF Worker
             try {
                 const workerUrl = buildWorkerParamUrl(params);
                 const ctrl = new AbortController();
@@ -782,7 +712,6 @@
                 }
             } catch (e) { lastErr = e; }
 
-            // 2) ?url= Encode Mode Fallback
             const attempts = [BASE_URL_HTTPS, BASE_URL_HTTP];
             for (const base of attempts) {
                 const url = buildUrl(base, params);
@@ -816,7 +745,7 @@
                     const auth = errHeader.querySelector('returnAuthMsg')?.textContent || '';
                     const msg = errHeader.querySelector('errMsg')?.textContent || '';
                     if (code === '30' || /SERVICE_KEY_IS_NOT_REGISTERED_ERROR/.test(auth)) {
-                        return { items: [], error: `API 인증 오류(code=${code}). 시스템 관리자에게 문의하세요.` };
+                        return { items: [], error: `API 인증 오류. 서비스 키를 확인하세요.` };
                     }
                     if (code || auth || msg) return { items: [], error: `API 오류: ${msg || auth || code}` };
                 }
@@ -842,21 +771,6 @@
             return { items: [] };
         }
 
-        // ===== Rendering =====
-        function getIconFor(it) {
-            const t = (it.lifeArray || "") + (it.intrsThemaArray || "");
-            if (/영유아|보육/.test(t)) return '🧸';
-            if (/아동|교육/.test(t)) return '📚';
-            if (/청소년|청년|일자리/.test(t)) return '💼';
-            if (/중장년|노년|돌봄/.test(t)) return '👵';
-            if (/주거/.test(t)) return '🏠';
-            if (/건강|신체건강|정신건강/.test(t)) return '🩺';
-            if (/서민금융|금융/.test(t)) return '💳';
-            if (/법률/.test(t)) return '⚖️';
-            if (/에너지/.test(t)) return '🔌';
-            return '🏛️';
-        }
-
         function renderItems(items, append = false) {
             const box = $('#results');
             if (!append) box.innerHTML = '';
@@ -865,9 +779,8 @@
                 if (!append) {
                     box.innerHTML = `
         <div class="empty-state">
-          <div class="empty-icon">📂</div>
-          <h3>해당 조건에 맞는 복지 서비스가 없습니다.</h3>
-          <p style="margin-top:8px;">다른 검색어나 조건으로 다시 시도해주세요.</p>
+          <h3>검색 결과가 없습니다</h3>
+          <p style="margin-top:8px;">다른 조건으로 다시 시도해주세요.</p>
         </div>`;
                 }
                 return;
@@ -876,35 +789,28 @@
             items.forEach(it => {
                 const isOnline = (it.onapPsbltYn || '').toUpperCase() === 'Y';
                 const isOffline = (it.onapPsbltYn || '').toUpperCase() === 'N';
-                const badge = isOnline ? '<span class="badge y">✓ 온라인 신청</span>' : (isOffline ? '<span class="badge n">✕ 방문 신청</span>' : '');
+                const badge = isOnline ? '<span class="badge y">온라인 신청</span>' : (isOffline ? '<span class="badge n">방문 신청</span>' : '');
                 const link = it.servDtlLink || '#';
 
-                // Create Tag strings
                 let tagsHtml = '';
-                if (it.lifeArray) tagsHtml += `<span class="tag">${it.lifeArray}</span>`;
                 if (it.trgterIndvdlArray) tagsHtml += `<span class="tag">${it.trgterIndvdlArray}</span>`;
                 if (it.intrsThemaArray) tagsHtml += `<span class="tag">${it.intrsThemaArray}</span>`;
 
                 const card = document.createElement('div');
                 card.className = 'card';
                 card.innerHTML = `
-      <div class="card-header">
-        <span class="card-icon">${getIconFor(it)}</span>
-        <h3 class="card-title">${it.servNm}</h3>
-        <div class="card-meta">${it.jurMnofNm || '관계부처'}</div>
-      </div>
-      
+      <div class="card-meta">${it.jurMnofNm || '관계부처'}</div>
+      <h3 class="card-title">${it.servNm}</h3>
       <p class="card-desc" title="${it.servDgst || ''}">${it.servDgst || '상세내용을 참조하세요.'}</p>
-      
       <div class="tags">${tagsHtml}</div>
       
       <div class="info-list">
         <div class="info-item">
           <span class="info-label">신청기간</span>
-          <span class="info-val">${it.aplyPrdCn || '상시접수 등 (상세확인)'}</span>
+          <span class="info-val">${it.aplyPrdCn || '상세확인'}</span>
         </div>
         <div class="info-item">
-          <span class="info-label">신청여부</span>
+          <span class="info-label">신청방법</span>
           <span class="info-val">${badge || '해당없음'}</span>
         </div>
         <div class="info-item">
@@ -914,8 +820,8 @@
       </div>
       
       <div class="card-actions">
-        <a class="btn btn-primary btn-card" href="${link}" target="_blank" rel="noopener">자세히 보기</a>
-        <button class="btn btn-outline btn-card" onclick="copyLink('${link.replace(/'/g, "\\'")}')">링크 복사</button>
+        <a class="btn btn-primary" href="${link}" target="_blank" rel="noopener">자세히 보기</a>
+        <button class="btn btn-outline" onclick="copyLink('${link.replace(/'/g, "\\'")}')">링크 복사</button>
       </div>
     `;
                 box.appendChild(card);
@@ -924,16 +830,15 @@
 
         function copyLink(link) {
             if (navigator.clipboard) {
-                navigator.clipboard.writeText(link).then(() => showToast('📎 링크가 클립보드에 복사되었습니다.'));
+                navigator.clipboard.writeText(link).then(() => showToast('링크가 복사되었습니다.'));
             } else {
-                // Fallback
                 const input = document.createElement('input');
                 input.value = link;
                 document.body.appendChild(input);
                 input.select();
                 document.execCommand('copy');
                 document.body.removeChild(input);
-                showToast('📎 링크가 복사되었습니다.');
+                showToast('링크가 복사되었습니다.');
             }
         }
 
@@ -962,22 +867,20 @@
 
             if (error) {
                 showNotice(error);
-                if (isLoadMore) currentPage--; // rollback
+                if (isLoadMore) currentPage--;
             } else {
                 currentItems = isLoadMore ? currentItems.concat(items) : items;
                 renderItems(items, isLoadMore);
 
-                // Check if there are more items to load (assuming 50 per page)
                 if (items.length >= 50) {
                     $('#loadMoreSection').classList.add('show');
                 }
             }
 
-            $('#loadMoreBtn').innerText = '더보기 (다음 50개) ↓';
-            $('#resultInfo').innerText = `현재 표시된 항목 수: ${currentItems.length}개`;
+            $('#loadMoreBtn').innerText = '더보기';
+            $('#resultInfo').innerText = `현재 표시된 항목: ${currentItems.length}개`;
         }
 
-        // ===== Events =====
         $('#searchBtn').addEventListener('click', () => doSearch(false));
         $('#loadMoreBtn').addEventListener('click', () => doSearch(true));
         $('#q').addEventListener('keydown', e => { if (e.key === 'Enter') doSearch(false); });
@@ -985,15 +888,14 @@
             el.addEventListener('change', () => doSearch(false));
         });
 
-        // ===== XLSX Export (Original raw zip implementation) =====
         function crc32(str) { const table = (function () { let c, t = []; for (let n = 0; n < 256; n++) { c = n; for (let k = 0; k < 8; k++) { c = ((c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1)); } t[n] = c >>> 0; } return t; })(); let crc = -1; for (let i = 0; i < str.length; i++) { const code = str.charCodeAt(i); crc = (crc >>> 8) ^ table[(crc ^ code) & 0xFF]; } return (crc ^ (-1)) >>> 0; }
         function strToUint8(str) { const a = new Uint8Array(str.length); for (let i = 0; i < str.length; i++) a[i] = str.charCodeAt(i) & 0xFF; return a; }
         function dateToDos(t) { const d = new Date(t || Date.now()); const y = d.getFullYear() > 1980 ? d.getFullYear() - 1980 : 0; const time = (d.getHours() << 11) | (d.getMinutes() << 5) | (Math.floor(d.getSeconds() / 2)); const date = (y << 9) | ((d.getMonth() + 1) << 5) | d.getDate(); return { dosTime: time, dosDate: date }; }
         function makeZip(files) { const enc = strToUint8; const parts = []; const central = []; let offset = 0; const now = dateToDos(); files.forEach(f => { const data = enc(f.content); const crc = crc32(f.content); const name = enc(f.name); const lf = new Uint8Array(30 + name.length); const v = new DataView(lf.buffer); v.setUint32(0, 0x04034b50, true); v.setUint16(4, 20, true); v.setUint16(6, 0, true); v.setUint16(8, 0, true); v.setUint16(10, now.dosTime, true); v.setUint16(12, now.dosDate, true); v.setUint32(14, crc, true); v.setUint32(18, data.length, true); v.setUint32(22, data.length, true); v.setUint16(26, name.length, true); v.setUint16(28, 0, true); lf.set(name, 30); parts.push(lf); offset += lf.length; parts.push(data); offset += data.length; const cd = new Uint8Array(46 + name.length); const cv = new DataView(cd.buffer); cv.setUint32(0, 0x02014b50, true); cv.setUint16(4, 20, true); cv.setUint16(6, 20, true); cv.setUint16(8, 0, true); cv.setUint16(10, 0, true); cv.setUint16(12, now.dosTime, true); cv.setUint16(14, now.dosDate, true); cv.setUint32(16, crc, true); cv.setUint32(20, data.length, true); cv.setUint32(24, data.length, true); cv.setUint16(28, name.length, true); cv.setUint16(30, 0, true); cv.setUint16(32, 0, true); cv.setUint16(34, 0, true); cv.setUint16(36, 0, true); cv.setUint32(38, 0, true); cv.setUint32(42, f._offset = (offset - (lf.length + data.length)), true); cd.set(name, 46); central.push(cd); }); const centralSize = central.reduce((s, a) => s + a.length, 0); const centralOffset = offset; central.forEach(c => { parts.push(c); offset += c.length; }); const eocd = new Uint8Array(22); const ev = new DataView(eocd.buffer); ev.setUint32(0, 0x06054b50, true); ev.setUint16(4, 0, true); ev.setUint16(6, 0, true); ev.setUint16(8, currentItems?.length || 0, true); ev.setUint16(10, currentItems?.length || 0, true); ev.setUint32(12, centralSize, true); ev.setUint32(16, centralOffset, true); ev.setUint16(20, 0, true); parts.push(eocd); let total = 0; parts.forEach(p => total += p.length); const out = new Uint8Array(total); let pos = 0; parts.forEach(p => { out.set(p, pos); pos += p.length; }); return new Blob([out], { type: 'application/zip' }); }
         function buildXlsx(items) {
             const esc = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-            const rows = [["서비스명", "소관부처", "요약", "연령대", "지원대상", "관심주제", "신청가능", "신청기간", "지원주기", "등록일", "상세링크"]]
-                .concat(items.map(it => [it.servNm || '', it.jurMnofNm || '', it.servDgst || '', it.lifeArray || '', it.trgterIndvdlArray || '', it.intrsThemaArray || '', (it.onapPsbltYn || ''), it.aplyPrdCn || '', it.sprtCycNm || '', fmtDate8(it.svcfrstRegTs) || '', it.servDtlLink || '']));
+            const rows = [["서비스명", "소관부처", "요약", "연령대", "지원대상", "관심주제", "신청가능", "신청기간", "등록일", "상세링크"]]
+                .concat(items.map(it => [it.servNm || '', it.jurMnofNm || '', it.servDgst || '', it.lifeArray || '', it.trgterIndvdlArray || '', it.intrsThemaArray || '', (it.onapPsbltYn || ''), it.aplyPrdCn || '', fmtDate8(it.svcfrstRegTs) || '', it.servDtlLink || '']));
             let sheet = `<?xml version="1.0" encoding="UTF-8"?>\n<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>`;
             rows.forEach((r, ri) => { sheet += `<row r="${ri + 1}">`; r.forEach((c, ci) => { const col = String.fromCharCode(65 + (ci % 26)) + (ri + 1); sheet += `<c r="${col}" t="inlineStr"><is><t>${esc(c)}</t></is></c>`; }); sheet += `</row>`; });
             sheet += `</sheetData></worksheet>`;
@@ -1001,7 +903,7 @@
             const rels = `<?xml version="1.0" encoding="UTF-8"?>\n<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">\n  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="/xl/workbook.xml"/>\n</Relationships>`;
             const wb = `<?xml version="1.0" encoding="UTF-8"?>\n<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">\n  <sheets>\n    <sheet name="welfare" sheetId="1" r:id="rId1"/>\n  </sheets>\n</workbook>`;
             const wbRels = `<?xml version="1.0" encoding="UTF-8"?>\n<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">\n  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/>\n</Relationships>`;
-            const core = `<?xml version="1.0" encoding="UTF-8"?>\n<cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:dcmitype="http://purl.org/dc/dcmitype/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">\n  <dc:title>welfare_services</dc:title>\n  <dc:creator>정부 복지지원 서비스 검색기</dc:creator>\n  <cp:lastModifiedBy>정부 복지지원 서비스 검색기</cp:lastModifiedBy>\n  <dcterms:created xsi:type="dcterms:W3CDTF">${new Date().toISOString()}</dcterms:created>\n</cp:coreProperties>`;
+            const core = `<?xml version="1.0" encoding="UTF-8"?>\n<cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:dcmitype="http://purl.org/dc/dcmitype/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">\n  <dc:title>welfare_services</dc:title>\n  <dc:creator>복지지원 검색</dc:creator>\n  <cp:lastModifiedBy>복지지원 검색</cp:lastModifiedBy>\n  <dcterms:created xsi:type="dcterms:W3CDTF">${new Date().toISOString()}</dcterms:created>\n</cp:coreProperties>`;
             const app = `<?xml version="1.0" encoding="UTF-8"?>\n<Properties xmlns="http://schemas.openxmlformats.org/officeDocument/2006/extended-properties" xmlns:vt="http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes">\n  <Application>WebApp</Application>\n</Properties>`;
             const files = [
                 { name: "[Content_Types].xml", content: contentTypes },
@@ -1015,13 +917,13 @@
             return makeZip(files);
         }
         $('#exportBtn').addEventListener('click', () => {
-            if (!currentItems || currentItems.length === 0) { showToast('⚠️ 내보낼 데이터가 없습니다.'); return; }
+            if (!currentItems || currentItems.length === 0) { showToast('저장할 데이터가 없습니다.'); return; }
             const blob = buildXlsx(currentItems);
-            const url = URL.createObjectURL(blob); const a = document.createElement('a');
-            a.href = url; a.download = '맞춤형_복지서비스.xlsx'; a.click(); URL.revokeObjectURL(url);
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = '복지서비스.xlsx'; a.click(); URL.revokeObjectURL(url);
         });
 
-        // Auto-run on load
         window.addEventListener('DOMContentLoaded', () => {
             doSearch(false);
         });
